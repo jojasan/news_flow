@@ -15,11 +15,3 @@ write_article_task:
     The article should be well-structured, coherent, and engaging. It must reference the original article, and include all the 
     references and sources used. Return the article as markdown text.
   agent: expert_writer
-
-
-    # {title} {url}
-    # {evidence}
-    # {datapoints}
-    # {counterarguments}
-    # {perspective}
-    # {tone}

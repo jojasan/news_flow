@@ -11,7 +11,7 @@ find_supporting_resources_task:
     You never include the original source as supporting evidence. Original source: {source}.
     Evidence should be from reputable sources and should be relevant to the key idea.
     You should try to include information from at least 3 supporting resources. If not possible,
-    include as many as you can find.
+    include as many as you can find. Include summaries of the evidence sources you found. 
   expected_output: >
     Detailed excerpts of supporting evidence and resources found that help validate the key 
     idea from the article. Include quotes, statistics, and other relevant information.
@@ -23,13 +23,33 @@ find_supporting_resources_task:
       evidence: str = Field(..., description="The evidence that supports the key idea.")
       source_url: str = Field(..., description="The url source for the evidence.") 
       rationale: str = Field(..., description="The rationale for why this evidence supports the key idea.")
+      summary: str = Field(..., description="A summary of the evidence article content")
 
     class SupportingEvidence(BaseModel):
       news_title: str = Field(..., description="The full name of the originally provided news article.")
       source_url: str = Field(..., description="The url source for the news.")
       idea: str = Field(..., description="The key idea that is supported by the evidence.")
       rationale: str = Field(..., description="The rationale for why this idea supports the main argument of the article")
-      evidence: List[EvidenceItem] = Field(..., description="A list of evidence that supports the key idea.")```
+      evidence: List[EvidenceItem] = Field(..., description="A list of evidence that supports the key idea. List items are of type 'EvidenceItem'")```
+    
+    It is extremely important for you to remember that SupportingEvidence.evidence is a list of elements of type "EvidenceItem".
+    Your result should be structured like this:
+    {
+      "news_title": "...",
+      "source_url": "...",
+      "idea": "...",
+      "rationale": "...",
+      "evidence": [
+          {
+              "idea": "...",
+              "evidence": "...",
+              "source_url": "...",
+              "rationale": "...",
+              "summary": "..."
+          },
+          ...
+      ]
+    }
   agent: web_research_analyst
 
 find_supporting_resources_task_2:
@@ -45,7 +65,7 @@ find_supporting_resources_task_2:
     You never include the original source as supporting evidence. Original source: {source}.
     Evidence should be from reputable sources and should be relevant to the key idea.
     You should try to include information from at least 3 supporting resources. If not possible,
-    include as many as you can find.
+    include as many as you can find. Include summaries of the evidence sources you found. 
   expected_output: >
     Detailed excerpts of supporting evidence and resources found that help validate the key 
     idea from the article. Include quotes, statistics, and other relevant information.
@@ -57,13 +77,33 @@ find_supporting_resources_task_2:
       evidence: str = Field(..., description="The evidence that supports the key idea.")
       source_url: str = Field(..., description="The url source for the evidence.") 
       rationale: str = Field(..., description="The rationale for why this evidence supports the key idea.")
+      summary: str = Field(..., description="A summary of the evidence article content")
 
     class SupportingEvidence(BaseModel):
       news_title: str = Field(..., description="The full name of the originally provided news article.")
       source_url: str = Field(..., description="The url source for the news.")
       idea: str = Field(..., description="The key idea that is supported by the evidence.")
       rationale: str = Field(..., description="The rationale for why this idea supports the main argument of the article")
-      evidence: List[EvidenceItem] = Field(..., description="A list of evidence that supports the key idea.")```
+      evidence: List[EvidenceItem] = Field(..., description="A list of evidence that supports the key idea. List items are of type 'EvidenceItem'")```
+    
+    It is extremely important for you to remember that SupportingEvidence.evidence is a list of elements of type "EvidenceItem".
+    Your result should be structured like this:
+    {
+      "news_title": "...",
+      "source_url": "...",
+      "idea": "...",
+      "rationale": "...",
+      "evidence": [
+          {
+              "idea": "...",
+              "evidence": "...",
+              "source_url": "...",
+              "rationale": "...",
+              "summary": "..."
+          },
+          ...
+      ]
+    }
   agent: web_research_analyst_2
 
 create_final_report:
@@ -85,11 +125,31 @@ create_final_report:
       evidence: str = Field(..., description="The evidence that supports the key idea.")
       source_url: str = Field(..., description="The url source for the evidence.") 
       rationale: str = Field(..., description="The rationale for why this evidence supports the key idea.")
+      summary: str = Field(..., description="A summary of the evidence article content")
 
     class SupportingEvidence(BaseModel):
       news_title: str = Field(..., description="The full name of the originally provided news article.")
       source_url: str = Field(..., description="The url source for the news.")
       idea: str = Field(..., description="The key idea that is supported by the evidence.")
       rationale: str = Field(..., description="The rationale for why this idea supports the main argument of the article")
-      evidence: List[EvidenceItem] = Field(..., description="A list of evidence that supports the key idea.")```
+      evidence: List[EvidenceItem] = Field(..., description="A list of evidence that supports the key idea. List items are of type 'EvidenceItem'")```
+
+    It is extremely important for you to remember that SupportingEvidence.evidence is a list of elements of type "EvidenceItem".
+    Your result should be structured like this:
+    {
+      "news_title": "...",
+      "source_url": "...",
+      "idea": "...",
+      "rationale": "...",
+      "evidence": [
+          {
+              "idea": "...",
+              "evidence": "...",
+              "source_url": "...",
+              "rationale": "...",
+              "summary": "..."
+          },
+          ...
+      ]
+    }
   agent: research_lead

@@ -11,7 +11,7 @@ research_counterarguments_task:
     You never include the original article source as supporting evidence. Original source: {source}.
     Evidence should be from reputable sources.
     You should try to include information from at least 3 supporting resources. If not possible,
-    include as many as you can find.
+    include as many as you can find. Include summaries of the sources you found. 
   expected_output: >
     Detailed excerpts of supporing resources found that support the provided counterargument help invalidate the key 
     idea from the article. Include quotes, statistics, and other relevant information.
@@ -22,11 +22,31 @@ research_counterarguments_task:
       counter_argument: str = Field(..., description="The counter argument that opposes the main argument.")
       rationale: str = Field(..., description="The rationale for why this is a counter argument that opposes the main argument.")
       source_url: str = Field(..., description="The url source for the counter argument.")
+      summary: str = Field(..., description="A summary of the counter argument article content")
 
     class CounterArgumentSources(BaseModel):
       news_title: str = Field(..., description="The full name of the originally provided news article.")
       counter_argument: CounterArgument = Field(..., description="The provided counter argument extracted from the news.")
-      supporting_sources: List[CounterArgSource] = Field(..., description="A list of sources that provide evidence for the counter argument.")```
+      supporting_sources: List[CounterArgSource] = Field(..., description="A list of sources that provide evidence for the counter argument. List items are of type 'CounterArgSource'")```
+
+    It is extremely important for you to remember that CounterArgumentSources.supporting_sources is a list of elements of type "CounterArgSource".
+    Your result should be structured like this:
+    {
+      "news_title": "...",
+      "counter_argument": {
+        "argument": "...",
+        "rationale": "..."
+      },
+      "supporting_sources": [
+        {
+          "counter_argument": "...",
+          "rationale": "...",
+          "source_url": "...",
+          "summary": "..."
+        },
+        ...
+      ]
+    }
   agent: web_research_analyst
 
 research_counterarguments_task_2:
@@ -42,7 +62,7 @@ research_counterarguments_task_2:
     You never include the original article source as supporting evidence. Original source: {source}.
     Evidence should be from reputable sources.
     You should try to include information from at least 3 supporting resources. If not possible,
-    include as many as you can find.
+    include as many as you can find. Include summaries of the sources you found. 
   expected_output: >
     Detailed excerpts of supporing resources found that support the provided counterargument help invalidate the key 
     idea from the article. Include quotes, statistics, and other relevant information.
@@ -53,11 +73,31 @@ research_counterarguments_task_2:
       counter_argument: str = Field(..., description="The counter argument that opposes the main argument.")
       rationale: str = Field(..., description="The rationale for why this is a counter argument that opposes the main argument.")
       source_url: str = Field(..., description="The url source for the counter argument.")
+      summary: str = Field(..., description="A summary of the counter argument article content")
 
     class CounterArgumentSources(BaseModel):
       news_title: str = Field(..., description="The full name of the originally provided news article.")
       counter_argument: CounterArgument = Field(..., description="The provided counter argument extracted from the news.")
-      supporting_sources: List[CounterArgSource] = Field(..., description="A list of sources that provide evidence for the counter argument.")```
+      supporting_sources: List[CounterArgSource] = Field(..., description="A list of sources that provide evidence for the counter argument. List items are of type 'CounterArgSource'")```
+
+    It is extremely important for you to remember that CounterArgumentSources.supporting_sources is a list of elements of type "CounterArgSource".
+    Your result should be structured like this:
+    {
+      "news_title": "...",
+      "counter_argument": {
+        "argument": "...",
+        "rationale": "..."
+      },
+      "supporting_sources": [
+        {
+          "counter_argument": "...",
+          "rationale": "...",
+          "source_url": "...",
+          "summary": "..."
+        },
+        ...
+      ]
+    }
   agent: web_research_analyst_2
 
 consolidate_counterarg_resources_task:
@@ -79,9 +119,29 @@ consolidate_counterarg_resources_task:
       counter_argument: str = Field(..., description="The counter argument that opposes the main argument.")
       rationale: str = Field(..., description="The rationale for why this is a counter argument that opposes the main argument.")
       source_url: str = Field(..., description="The url source for the counter argument.")
+      summary: str = Field(..., description="A summary of the counter argument article content")
 
     class CounterArgumentSources(BaseModel):
       news_title: str = Field(..., description="The full name of the originally provided news article.")
       counter_argument: CounterArgument = Field(..., description="The provided counter argument extracted from the news.")
-      supporting_sources: List[CounterArgSource] = Field(..., description="A list of sources that provide evidence for the counter argument.")```
+      supporting_sources: List[CounterArgSource] = Field(..., description="A list of sources that provide evidence for the counter argument. List items are of type 'CounterArgSource'")```
+
+    It is extremely important for you to remember that CounterArgumentSources.supporting_sources is a list of elements of type "CounterArgSource".
+    Your result should be structured like this:
+    {
+      "news_title": "...",
+      "counter_argument": {
+        "argument": "...",
+        "rationale": "..."
+      },
+      "supporting_sources": [
+        {
+          "counter_argument": "...",
+          "rationale": "...",
+          "source_url": "...",
+          "summary": "..."
+        },
+        ...
+      ]
+    }
   agent: research_lead

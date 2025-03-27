@@ -43,23 +43,25 @@ class EvidenceItem(BaseModel):
     evidence: str = Field(..., description="The evidence that supports the key idea.")
     source_url: str = Field(..., description="The url source for the evidence.") 
     rationale: str = Field(..., description="The rationale for why this evidence supports the key idea.")
+    summary: str = Field(..., description="A summary of the evidence article content")
 
 class SupportingEvidence(BaseModel):
     news_title: str = Field(..., description="The full name of the originally provided news article.")
     source_url: str = Field(..., description="The url source for the news.")
     idea: str = Field(..., description="The key idea that is supported by the evidence.")
     rationale: str = Field(..., description="The rationale for why this idea supports the main argument of the article")
-    evidence: List[EvidenceItem] = Field(..., description="A list of evidence that supports the key idea.")
+    evidence: List[EvidenceItem] = Field(..., description="A list of evidence that supports the key idea. List items are of type 'EvidenceItem'")
 
 class CounterArgSource(BaseModel):
     counter_argument: str = Field(..., description="The counter argument that opposes the main argument.")
     rationale: str = Field(..., description="The rationale for why this is a counter argument that opposes the main argument.")
     source_url: str = Field(..., description="The url source for the counter argument.")
+    summary: str = Field(..., description="A summary of the counter argument article content")
 
 class CounterArgumentSources(BaseModel):
     news_title: str = Field(..., description="The full name of the originally provided news article.")
     counter_argument: CounterArgument = Field(..., description="The provided counter argument extracted from the news.")
-    supporting_sources: List[CounterArgSource] = Field(..., description="A list of sources that provide evidence for the counter argument.")
+    supporting_sources: List[CounterArgSource] = Field(..., description="A list of sources that provide evidence for the counter argument. List items are of type 'CounterArgSource'")
 
 # New consolidated models
 

@@ -214,12 +214,13 @@ class NewsFlow(Flow[NewsState]):
 def kickoff():
     news_flow = NewsFlow()
     news_flow.kickoff(inputs={
-        'id': 'optimized2', # use an id if you want to start from the latest checkpoint
+        'id': 'optimized3', # use an id if you want to start from the latest checkpoint
         'start_from_method': 'plan_research', # use this parameter to start from a specific method (starts after this one)
         'num_starting_pool_news': 2,
         'num_max_news': 1,
+        'topic': 'Depression in straight men between 30-50 years old',
         # 'topic': 'Articificial Intelligence business case ROI in Banks',
-        'topic': 'Climate Change in Colombia',
+        # 'topic': 'Climate Change in Colombia',
         # 'topic': 'Economic outlook of Peru',
         'perspective': 'Positive, optimistic',
         'tone': 'Scientific, informative',

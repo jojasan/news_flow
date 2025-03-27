@@ -27,7 +27,7 @@ class DiscoverCrew:
             config=self.agents_config["topic_expert"],
             llm=LLM(
                 model="openai/o3-mini", 
-                num_retries=2,
+                num_retries=3,
                 fallbacks=[
                     {
                         "model": "openrouter/google/gemini-2.0-flash-001",
@@ -49,10 +49,10 @@ class DiscoverCrew:
             llm=LLM(
                 model="openrouter/google/gemini-2.0-flash-001", 
                 base_url="https://openrouter.ai/api/v1",
-                num_retries=2,
+                num_retries=3,
                 fallbacks=[
                     {
-                        "model": "openai/gpt-4o-mini"
+                        "model": "openai/gpt-4o-mini",
                     },
                     {
                         "model": "groq/llama-3.3-70b-versatile",
