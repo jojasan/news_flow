@@ -1,0 +1,23 @@
+# Environment variables
+.env
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtual environment
+.venv/
+
+# Database and state files
+flow_states.db
+
+# VSCode settings (in root or any subfolder)
+.vscode/
+
+# Windows system files
+Thumbs.db
+desktop.ini
+
+# Outputs folder (dynamically generated files)
+src/news_flow/outputs/

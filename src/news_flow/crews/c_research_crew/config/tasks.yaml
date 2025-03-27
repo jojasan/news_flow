@@ -1,0 +1,56 @@
+find_supporting_resources_task:
+  description: >
+    Identify and summarize supporting resources that can be used to validate a key idea 
+    extracted from the article. 
+    Article title: {news_title}.
+    Original article URL: {source}.
+    Key idea: {key_idea}. 
+    Perspective: {perspective}. 
+    To find good sources you consider how do the supporting resources align with the key idea, 
+    which must align with the following: {rationale}
+    You never include the original source as supporting evidence. Original source: {source}.
+    Evidence should be from reputable sources and should be relevant to the key idea.
+    You should try to include information from at least 3 supporting resources. If not possible,
+    include as many as you can find.
+  expected_output: >
+    Detailed excerpts of supporting evidence and resources found that help validate the key 
+    idea from the article. Include quotes, statistics, and other relevant information.
+    Always include the source of the information (url) and a brief summary of the supporting content.
+    You will return a the result as a SupportingEvidence pydantic model.
+  agent: web_research_analyst
+
+find_supporting_resources_task_2:
+  description: >
+    Identify and summarize supporting resources that can be used to validate a key idea 
+    extracted from the article. 
+    Article title: {news_title}.
+    Original article URL: {source}.
+    Key idea: {key_idea}. 
+    Perspective: {perspective}. 
+    To find good sources you consider how do the supporting resources align with the key idea, 
+    which must align with the following: {rationale}
+    You never include the original source as supporting evidence. Original source: {source}.
+    Evidence should be from reputable sources and should be relevant to the key idea.
+    You should try to include information from at least 3 supporting resources. If not possible,
+    include as many as you can find.
+  expected_output: >
+    Detailed excerpts of supporting evidence and resources found that help validate the key 
+    idea from the article. Include quotes, statistics, and other relevant information.
+    Always include the source of the information (url) and a brief summary of the supporting content.
+    You will return a the result as a SupportingEvidence pydantic model.
+  agent: web_research_analyst_2
+
+create_final_report:
+  description: >
+    Consolidate the key supporting evidence data found by the research team for the following original article:
+    Article title: {news_title}.
+    Article URL: {source}.
+    Key idea: {key_idea}. 
+    Perspective: {perspective}. 
+    If the data provided by the Analysts is not enough to validate the key idea, you may need to conduct additional research.
+  expected_output: >
+    A list of supporting evidence and sources found by the research team that validate the key idea extracted from the article.
+    Do not include the original article as supporting evidence, and do not provide a summary of the original article. 
+    You will return a the result as a SupportingEvidence pydantic model. 
+    Also inlcude the title of the article, the url source, and the key idea being analized in the output.
+  agent: research_lead

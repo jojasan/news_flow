@@ -1,0 +1,52 @@
+elicit_key_ideas_task:
+  description: >
+    From a given article, extract the key ideas and concepts that are essential to understanding
+    the main points of the news story. Focus on the ideas that best support the main argument or
+    thesis of the article. \n
+    Article title: {news_title} \n
+    Article link: {source} \n
+    Article summary: {summary} \n
+    Article content: {article_content}
+  expected_output: >
+    A list of at least 3 key ideas about the given article, each with a brief description of how
+    it supports the main thesis or argument of the article. You will return a the result as a
+    Ideas pydantic model. Inlcude the title of the article and the url source in the output.
+  agent: editorial_analyst
+
+elicit_datapoints_task:
+  description: >
+    From a given article, extract the key datapoints that are essential to understanding
+    the gist of the news story. Focus on the data that best support the main argument or
+    thesis of the article. Make sure that you only include quantitative datapoints (statistics, figures, numbers, etc.) \n
+    Article title: {news_title} \n
+    Article link: {source} \n
+    Article summary: {summary} \n
+    Article content: {article_content}
+  expected_output: >
+    A list of key datapoints (quantitative datapoints like stats and numbers) about the given article, 
+    each with a brief rationale of how it supports the main thesis or argument of the article. 
+    You will return a the result as a Datapoints pydantic model. Inlcude the title of the article and the url source in the output.
+  agent: editorial_analyst
+
+create_counterarguments_task:
+  description: >
+    From a given article, think of key counterarguments to the main thesis of the article. \n
+    Article title: {news_title} \n
+    Article link: {source} \n
+    Article summary: {summary} \n
+    Article content: {article_content}
+  expected_output: >
+    A list of counterarguments to the main thesis of the article, each with a brief description of how
+    it weakens the main argument of the article. You will return a the result as a CounterArguments pydantic model. 
+    Inlcude the title of the article and the url source in the output.
+  agent: editorial_analyst
+
+consolidate_analysis_task:
+  description: >
+    Consolidate the key ideas, datapoints, and counterarguments extracted from the article into a
+    single output. 
+  expected_output: >
+    A consolidation of all the key idas, datapoints, and counterarguments extracted from the article.
+    You will return a the result as a NewsResearchPlan pydantic model. Do not add any new information
+    besides the ones extracted from the previous tasks.
+  agent: editorial_analyst
