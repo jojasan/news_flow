@@ -16,7 +16,20 @@ find_supporting_resources_task:
     Detailed excerpts of supporting evidence and resources found that help validate the key 
     idea from the article. Include quotes, statistics, and other relevant information.
     Always include the source of the information (url) and a brief summary of the supporting content.
-    You will return a the result as a SupportingEvidence pydantic model.
+    You will return a the result as a SupportingEvidence pydantic model. Here's the definition of the pydantic
+    model for your reference: ```
+    class EvidenceItem(BaseModel):
+      idea: str = Field(..., description="The key idea that is supported by the evidence.")
+      evidence: str = Field(..., description="The evidence that supports the key idea.")
+      source_url: str = Field(..., description="The url source for the evidence.") 
+      rationale: str = Field(..., description="The rationale for why this evidence supports the key idea.")
+
+    class SupportingEvidence(BaseModel):
+      news_title: str = Field(..., description="The full name of the originally provided news article.")
+      source_url: str = Field(..., description="The url source for the news.")
+      idea: str = Field(..., description="The key idea that is supported by the evidence.")
+      rationale: str = Field(..., description="The rationale for why this idea supports the main argument of the article")
+      evidence: List[EvidenceItem] = Field(..., description="A list of evidence that supports the key idea.")```
   agent: web_research_analyst
 
 find_supporting_resources_task_2:
@@ -37,7 +50,20 @@ find_supporting_resources_task_2:
     Detailed excerpts of supporting evidence and resources found that help validate the key 
     idea from the article. Include quotes, statistics, and other relevant information.
     Always include the source of the information (url) and a brief summary of the supporting content.
-    You will return a the result as a SupportingEvidence pydantic model.
+    You will return a the result as a SupportingEvidence pydantic model. Here's the definition of the pydantic
+    model for your reference: ```
+    class EvidenceItem(BaseModel):
+      idea: str = Field(..., description="The key idea that is supported by the evidence.")
+      evidence: str = Field(..., description="The evidence that supports the key idea.")
+      source_url: str = Field(..., description="The url source for the evidence.") 
+      rationale: str = Field(..., description="The rationale for why this evidence supports the key idea.")
+
+    class SupportingEvidence(BaseModel):
+      news_title: str = Field(..., description="The full name of the originally provided news article.")
+      source_url: str = Field(..., description="The url source for the news.")
+      idea: str = Field(..., description="The key idea that is supported by the evidence.")
+      rationale: str = Field(..., description="The rationale for why this idea supports the main argument of the article")
+      evidence: List[EvidenceItem] = Field(..., description="A list of evidence that supports the key idea.")```
   agent: web_research_analyst_2
 
 create_final_report:
@@ -53,4 +79,17 @@ create_final_report:
     Do not include the original article as supporting evidence, and do not provide a summary of the original article. 
     You will return a the result as a SupportingEvidence pydantic model. 
     Also inlcude the title of the article, the url source, and the key idea being analized in the output.
+    Here's the definition of the pydantic model for your reference: ```
+    class EvidenceItem(BaseModel):
+      idea: str = Field(..., description="The key idea that is supported by the evidence.")
+      evidence: str = Field(..., description="The evidence that supports the key idea.")
+      source_url: str = Field(..., description="The url source for the evidence.") 
+      rationale: str = Field(..., description="The rationale for why this evidence supports the key idea.")
+
+    class SupportingEvidence(BaseModel):
+      news_title: str = Field(..., description="The full name of the originally provided news article.")
+      source_url: str = Field(..., description="The url source for the news.")
+      idea: str = Field(..., description="The key idea that is supported by the evidence.")
+      rationale: str = Field(..., description="The rationale for why this idea supports the main argument of the article")
+      evidence: List[EvidenceItem] = Field(..., description="A list of evidence that supports the key idea.")```
   agent: research_lead

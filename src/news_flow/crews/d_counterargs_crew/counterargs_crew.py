@@ -34,7 +34,7 @@ class CounterArgumentsCrew:
             llm=LLM(
                 model="openrouter/google/gemini-2.0-flash-001", 
                 base_url="https://openrouter.ai/api/v1",
-                num_retries=2,
+                num_retries=3,
                 fallbacks=[
                     {
                         "model": "openai/gpt-4o-mini"
@@ -55,7 +55,7 @@ class CounterArgumentsCrew:
             config=self.agents_config["web_research_analyst_2"],
             llm=LLM(
                 model="openai/gpt-4o-mini", 
-                num_retries=2,
+                num_retries=3,
                 fallbacks=[
                     {
                         "model": "openrouter/google/gemini-2.0-flash-001",
@@ -78,7 +78,7 @@ class CounterArgumentsCrew:
             config=self.agents_config["research_lead"],
             llm=LLM(
                 model="openai/o3-mini", 
-                num_retries=2,
+                num_retries=3,
                 fallbacks=[
                     {
                         "model": "openrouter/google/gemini-2.0-flash-001",

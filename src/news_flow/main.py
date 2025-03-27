@@ -215,7 +215,7 @@ def kickoff():
     news_flow = NewsFlow()
     news_flow.kickoff(inputs={
         'id': 'optimized2', # use an id if you want to start from the latest checkpoint
-        # 'start_from_method': 'counter_args', # use this parameter to start from a specific method (starts after this one)
+        'start_from_method': 'plan_research', # use this parameter to start from a specific method (starts after this one)
         'num_starting_pool_news': 2,
         'num_max_news': 1,
         # 'topic': 'Articificial Intelligence business case ROI in Banks',
