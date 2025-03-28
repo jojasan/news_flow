@@ -18,10 +18,6 @@ app = FastAPI()
 def read_root():
     return {"Hello": "World"}
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
-
 @app.post("/happifynews")
 async def happify_news(task: Task, background_tasks: BackgroundTasks):
 
@@ -39,17 +35,17 @@ async def happify_news(task: Task, background_tasks: BackgroundTasks):
         "topic": task.topic,
     }
 
-def kickoff_workflow(topic: str):
+def kickoff_workflow(task: Task):
     news_flow = NewsFlow()
     news_flow.kickoff(inputs={
         'id': 'api_call', # use an id if you want to start from the latest checkpoint
+        'num_starting_pool_news': task.num_starting_pool_news,
+        'num_max_news': task.num_max_news,
+        'topic': task.topic,
+        'perspective': task.perspective,
+        'tone': task.tone,
+        'current_date': '2025-03-07',
         # 'start_from_method': 'counter_args', # use this parameter to start from a specific method (starts after this one)
-        'num_starting_pool_news': 2,
-        'num_max_news': 1,
-        'topic': topic,
-        'perspective': 'Positive, optimistic',
-        'tone': 'Scientific, informative',
-        'current_date': '2025-03-07'
     })
 
 # 'id': 'new_test_3', # use an id if you want to start from the latest checkpoint
