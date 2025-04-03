@@ -11,6 +11,9 @@ from news_flow.crews.e_writer_crew.writer_crew import WriterCrew
 from news_flow.types import NewsList, NewsResearchPlan, SupportingEvidence, CounterArgumentSources, ConsolidatedNews, ConsolidatedNewsItem, CounterArguments
 from typing import Dict, Any, List, Optional
 from crewai.flow.persistence.sqlite import SQLiteFlowPersistence
+import difflib
+import string
+from typing import List, Optional
 
 class NewsState(BaseModel):
     id: str = ''
@@ -169,53 +172,64 @@ class NewsFlow(Flow[NewsState]):
             i += 1
         self.state.flow_tokens['counter_args'] = {"prompt_tokens": prompt_tokens, 
                                                   "completion_tokens": completion_tokens}
-
+        
     @listen(counter_args)
     def write_articles(self):
         print("Starting writing articles")
-        news_list = consolidate_news(self.state.news_evidence, self.state.plan, self.state.counter_arguments, self.state.news_list)
-        save_flow_step_output(news_list, filename=f'final_research_output.json') 
+        # Use the new function which returns a plain dict.
+        news_json = consolidate_news_json(
+            self.state.news_evidence,
+            self.state.plan,
+            self.state.counter_arguments,
+            self.state.news_list
+        )
+        save_flow_step_output(cleanup_consolidated_json(news_json), filename='final_research_output.json')
 
-        for news_item in news_list.news_list:
-            # Getting string json representations of the pydantic objects
-            evidence_str = json.dumps([evidence.model_dump() for evidence in news_item.supporting_evidence])
-            datapoints_str = json.dumps([datapoints.model_dump() for datapoints in news_item.datapoints])
-            counterargs_str = json.dumps([counterargs.model_dump() for counterargs in news_item.counter_argument_sources])
+        # Iterate over the consolidated news items in the JSON structure.
+        for news_item in news_json["news_list"]:
+            # Create JSON string representations of the lists from the dict.
+            evidence_str = json.dumps(news_item["supporting_evidence"])
+            datapoints_str = json.dumps(news_item["datapoints"])
+            counterargs_str = json.dumps(news_item["counter_argument_sources"])
+            
             writer_dics = [
-                    {
-                        "title": news_item.news_title,
-                        "url": news_item.source_url,
-                        "original_content": news_item.content,
-                        "evidence": evidence_str,
-                        "datapoints": datapoints_str,
-                        "counterarguments": counterargs_str,
-                        "perspective": self.state.perspective,
-                        "tone": self.state.tone,
-                    }
-                ]  
+                {
+                    "title": news_item["news_title"],
+                    "url": news_item["source_url"],
+                    "original_content": news_item["content"],
+                    "evidence": evidence_str,
+                    "datapoints": datapoints_str,
+                    "counterarguments": counterargs_str,
+                    "perspective": self.state.perspective,
+                    "tone": self.state.tone,
+                }
+            ]
             
             results = (
                 WriterCrew().crew()
-                .kickoff_for_each(inputs=writer_dics) 
+                .kickoff_for_each(inputs=writer_dics)
             )
-        
-        prompt_tokens = 0
-        completion_tokens = 0
-        i = 0
-        for article in results:
-            self.state.articles.append(article.raw)
-            save_flow_step_output(article.raw, filename=f'article_{i}.md') 
-            prompt_tokens += article.token_usage.prompt_tokens
-            completion_tokens += article.token_usage.completion_tokens
-            i += 1
-        self.state.flow_tokens['write_articles'] = {"prompt_tokens": prompt_tokens, 
-                                                  "completion_tokens": completion_tokens}
+            
+            prompt_tokens = 0
+            completion_tokens = 0
+            i = 0
+            for article in results:
+                self.state.articles.append(article.raw)
+                save_flow_step_output(article.raw, filename=f'article_{i}.md')
+                prompt_tokens += article.token_usage.prompt_tokens
+                completion_tokens += article.token_usage.completion_tokens
+                i += 1
+            self.state.flow_tokens['write_articles'] = {
+                "prompt_tokens": prompt_tokens, 
+                "completion_tokens": completion_tokens
+            }
+
 
 def kickoff():
     news_flow = NewsFlow()
     news_flow.kickoff(inputs={
-        'id': 'optimized3', # use an id if you want to start from the latest checkpoint
-        'start_from_method': 'plan_research', # use this parameter to start from a specific method (starts after this one)
+        'id': 'test_jsonconsolidation', # use an id if you want to start from the latest checkpoint
+        'start_from_method': 'counter_args', # use this parameter to start from a specific method (starts after this one)
         'num_starting_pool_news': 2,
         'num_max_news': 1,
         'topic': 'Depression in straight men between 30-50 years old',
@@ -224,7 +238,7 @@ def kickoff():
         # 'topic': 'Economic outlook of Peru',
         'perspective': 'Positive, optimistic',
         'tone': 'Scientific, informative',
-        'current_date': '2025-03-07'
+        'current_date': '2025-04-03'
     })
 
     print("------ Flow completed ------")
@@ -304,58 +318,113 @@ def save_flow_step_output(flow_step_output: Any, filename: str, subfolder: str =
         except Exception as e:
             print(f"Error saving Markdown file {filename}: {e}")
 
-# Function to consolidate the separate objects
-def consolidate_news(
+def normalize_title(title: str) -> str:
+    """Normalize the title by lowercasing and removing punctuation and extra whitespace."""
+    translator = str.maketrans('', '', string.punctuation)
+    return title.lower().translate(translator).strip()
+
+def find_close_key(norm_title: str, keys: List[str], threshold: float = 0.95) -> Optional[str]:
+    """
+    Look for an existing key in `keys` that is very similar to `norm_title`.
+    Returns the matching key if found, otherwise None.
+    """
+    for key in keys:
+        if difflib.SequenceMatcher(None, norm_title, key).ratio() > threshold:
+            return key
+    return None
+
+def consolidate_news_json(
     evidence_list: List[SupportingEvidence],
-    news_research_plans: List[NewsResearchPlan], #datapoints are here
+    news_research_plans: List[NewsResearchPlan],
     counter_arguments_list: List[CounterArgumentSources],
-    news_list: NewsList  
-) -> ConsolidatedNews:
-    news_dict: Dict[str, ConsolidatedNewsItem] = {}
+    news_list: NewsList
+) -> dict:
+    # Use a dictionary keyed by normalized title.
+    news_dict = {}
     
-    # First, process the NewsList to pre-populate consolidated items with summary and source_url
+    # Pre-populate using the news_list from NewsList
     for news in news_list.news_list:
-        title = news.news_title
-        if title not in news_dict:
-            news_dict[title] = ConsolidatedNewsItem(
-                news_title=title,
-                summary=news.summary,
-                source_url=news.source_url,
-                content=news.content
-            )
-        else:
-            # Optionally update these fields if the item already exists
-            if news_dict[title].summary is None:
-                news_dict[title].summary = news.summary
-            if news_dict[title].source_url is None:
-                news_dict[title].source_url = news.source_url
-            if news_dict[title].content is None:
-                news_dict[title].content = news.content
+        norm_title = normalize_title(news.news_title)
+        existing_key = find_close_key(norm_title, list(news_dict.keys()))
+        key = existing_key if existing_key is not None else norm_title
+        
+        if key not in news_dict:
+            news_dict[key] = {
+                "news_title": news.news_title,
+                "summary": news.summary,
+                "source_url": news.source_url,
+                "content": news.content,
+                "supporting_evidence": [],
+                "datapoints": [],
+                "counter_argument_sources": []
+            }
+    
+    def ensure_entry(original_title: str) -> str:
+        """Ensure that an entry exists for the given title, returning the normalized key."""
+        norm_title = normalize_title(original_title)
+        existing_key = find_close_key(norm_title, list(news_dict.keys()))
+        key = existing_key if existing_key is not None else norm_title
+        if key not in news_dict:
+            news_dict[key] = {
+                "news_title": original_title,
+                "summary": None,
+                "source_url": None,
+                "content": None,
+                "supporting_evidence": [],
+                "datapoints": [],
+                "counter_argument_sources": []
+            }
+        return key
 
     # Process SupportingEvidence objects
     for evidence in evidence_list:
-        title = evidence.news_title
-        if title not in news_dict:
-            news_dict[title] = ConsolidatedNewsItem(news_title=title)
-        news_dict[title].supporting_evidence.append(evidence)
+        key = ensure_entry(evidence.news_title)
+        news_dict[key]["supporting_evidence"].append(evidence.dict())
     
-    # Process Datapoints from NewsResearchPlan objects
+    # Process NewsResearchPlan objects to extract datapoints
     for plan in news_research_plans:
-        title = plan.news_title
-        if title not in news_dict:
-            news_dict[title] = ConsolidatedNewsItem(news_title=title)
-        # Here, plan.key_datapoints is of type Datapoints
-        news_dict[title].datapoints.append(plan.key_datapoints)
+        key = ensure_entry(plan.news_title)
+        news_dict[key]["datapoints"].append(plan.key_datapoints.dict())
     
     # Process CounterArgumentSources objects
     for cas in counter_arguments_list:
-        title = cas.news_title
-        if title not in news_dict:
-            news_dict[title] = ConsolidatedNewsItem(news_title=title)
-        news_dict[title].counter_argument_sources.append(cas)
+        key = ensure_entry(cas.news_title)
+        news_dict[key]["counter_argument_sources"].append(cas.dict())
     
     consolidated_list = list(news_dict.values())
-    return ConsolidatedNews(news_list=consolidated_list)
+    return {"news_list": consolidated_list}
+
+def cleanup_consolidated_json(data: dict) -> dict:
+    """
+    Cleans up a consolidated JSON structure by removing duplicate fields from nested records.
+    For each news item in data["news_list"], if nested objects have a field (like "news_title"
+    or "source_url") that is identical to the top-level value, that field is removed.
+    
+    Args:
+        data: The consolidated JSON dictionary.
+    
+    Returns:
+        The cleaned-up JSON dictionary.
+    """
+    for news_item in data.get("news_list", []):
+        top_title = news_item.get("news_title")
+        top_source = news_item.get("source_url")
+        
+        # Clean up duplicates in the supporting_evidence list.
+        for evidence in news_item.get("supporting_evidence", []):
+            # Remove "news_title" if it matches the top-level news_title.
+            if evidence.get("news_title") == top_title:
+                evidence.pop("news_title", None)
+            # Remove "source_url" if it matches the top-level source_url.
+            if evidence.get("source_url") == top_source:
+                evidence.pop("source_url", None)
+        
+        # Clean up duplicates in the counter_argument_sources list.
+        for cas in news_item.get("counter_argument_sources", []):
+            if cas.get("news_title") == top_title:
+                cas.pop("news_title", None)
+    
+    return data
 
 if __name__ == "__main__":
     kickoff()
