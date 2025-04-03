@@ -41,23 +41,32 @@ class NewsState(BaseModel):
     flow_tokens: Dict[str, Any] = {}
     current_date: str = ''
     language: str = 'en' # TODO not being used yet
+    current_step: str = ''  # New field to track the current step
 
 @persist(persistence=SQLiteFlowPersistence(db_path='flow_states.db'))
 class NewsFlow(Flow[NewsState]):
 
     @start()
     def initialize(self):
+        # TODO beautify printing, remove content, summarize Lists (just give counts)
         print(f"Initializing flow with these parameters: {self.state}")
         # TODO add more initialization logic here
+        # ideas: load config like how much paralellism to use, log verbosity
+        if not self.state.current_step:
+            self.state.current_step = "initialize"
     
     @router(initialize)
     def load_state(self):
         print("Trying to load state from database...")
         if self.state.start_from_method:
             print(f"Starting from method: {self.state.start_from_method}")
-            return self.state.start_from_method # generates the event of FINISHING this method (so the next method is the one that actually starts!)
-        print("No start_from_method provided")
-        return 'start_from_beginning' # if no start_from_method is provided, start from the beginning
+            return self.state.start_from_method  # Resume from the provided method
+        elif self.state.current_step:
+            print(f"Resuming from current step: {self.state.current_step}")
+            return self.state.current_step  # Resume from the latest checkpoint
+        else:
+            print("No start_from_method provided and no checkpoint found")
+            return 'start_from_beginning'  # Fallback if no checkpoint exists
 
     @listen('start_from_beginning')
     def discover_news(self):
@@ -76,6 +85,7 @@ class NewsFlow(Flow[NewsState]):
         self.state.flow_tokens['discover_news'] = {"prompt_tokens": result.token_usage.prompt_tokens, 
                                                    "completion_tokens": result.token_usage.completion_tokens}
         save_flow_step_output(result.pydantic, 'news_list.json')
+        self.state.current_step = "discover_news"
 
     @listen(discover_news)
     def plan_research(self):
@@ -109,6 +119,7 @@ class NewsFlow(Flow[NewsState]):
             completion_tokens += plan.token_usage.completion_tokens
         self.state.flow_tokens['plan_research'] = {"prompt_tokens": prompt_tokens, 
                                                    "completion_tokens": completion_tokens}
+        self.state.current_step = "plan_research"
 
     @listen(plan_research)
     def research_news(self):
@@ -146,6 +157,7 @@ class NewsFlow(Flow[NewsState]):
             i += 1
         self.state.flow_tokens['research_news'] = {"prompt_tokens": prompt_tokens, 
                                                    "completion_tokens": completion_tokens}
+        self.state.current_step = "research_news"
 
     @listen(research_news)
     def counter_args(self):
@@ -182,6 +194,7 @@ class NewsFlow(Flow[NewsState]):
             i += 1
         self.state.flow_tokens['counter_args'] = {"prompt_tokens": prompt_tokens, 
                                                   "completion_tokens": completion_tokens}
+        self.state.current_step = "counter_args"
         
     @listen(counter_args)
     def write_articles(self):
@@ -233,6 +246,7 @@ class NewsFlow(Flow[NewsState]):
                 "prompt_tokens": prompt_tokens, 
                 "completion_tokens": completion_tokens
             }
+        self.state.current_step = "write_articles"
 
 
 def kickoff():
