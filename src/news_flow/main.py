@@ -58,7 +58,7 @@ class NewsFlow(Flow[NewsState]):
     @router(initialize)
     def load_state(self):
         print("Trying to load state from database...")
-        if self.state.start_from_method:
+        if self.state.start_from_method: # this only works if I have patched crewAI to accept start from method
             print(f"Starting from method: {self.state.start_from_method}")
             return self.state.start_from_method  # Resume from the provided method
         elif self.state.current_step:
