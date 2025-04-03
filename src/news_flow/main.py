@@ -50,9 +50,8 @@ class NewsFlow(Flow[NewsState]):
     def initialize(self):
         # TODO beautify printing, remove content, summarize Lists (just give counts)
         print(f"Initializing flow with these parameters: {self.state}")
-        # TODO add more initialization logic here
-        # ideas: load config like how much paralellism to use, log verbosity
-        if not self.state.current_step:
+        # TODO add more initialization logic here: load via config how much paralellism to use, log verbosity, crewai verbosity
+        if self.state.current_step == '':
             self.state.current_step = "initialize"
     
     @router(initialize)
@@ -61,8 +60,8 @@ class NewsFlow(Flow[NewsState]):
         if self.state.start_from_method: # this only works if I have patched crewAI to accept start from method
             print(f"Starting from method: {self.state.start_from_method}")
             return self.state.start_from_method  # Resume from the provided method
-        elif self.state.current_step:
-            print(f"Resuming from current step: {self.state.current_step}")
+        elif self.state.current_step != 'initialize':
+            print(f"Resuming from latest step: {self.state.current_step}")
             return self.state.current_step  # Resume from the latest checkpoint
         else:
             print("No start_from_method provided and no checkpoint found")
@@ -248,6 +247,11 @@ class NewsFlow(Flow[NewsState]):
             }
         self.state.current_step = "write_articles"
 
+    def get_state(self) -> NewsState:
+        """
+        Returns the complete state of the workflow
+        """
+        return self.state
 
 def kickoff():
     news_flow = NewsFlow()
