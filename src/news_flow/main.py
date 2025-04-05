@@ -5,7 +5,6 @@ from typing import Dict, Any, List, Optional
 # Third-Party Imports (CrewAI, Pydantic, etc.)
 from pydantic import BaseModel
 from crewai.flow import Flow, listen, start, persist, router
-from crewai.flow.persistence.sqlite import SQLiteFlowPersistence
 
 # Application-Specific Imports (News Flow Modules)
 from news_flow.crews.a_discover_crew.discover_crew import DiscoverCrew
@@ -24,6 +23,7 @@ from news_flow.utils import (
     consolidate_news_json,
     cleanup_consolidated_json,
 )
+from news_flow.crewai_extensions import SQLiteFlowPersistenceJSON # this is a patched version of the SQLiteFlowPersistence class that uses JSON serialization
 
 class NewsState(BaseModel):
     id: str = ''
@@ -43,7 +43,7 @@ class NewsState(BaseModel):
     language: str = 'en' # TODO not being used yet
     current_step: str = ''  # New field to track the current step
 
-@persist(persistence=SQLiteFlowPersistence(db_path='flow_states.db'))
+@persist(persistence=SQLiteFlowPersistenceJSON(db_path='flow_states.db'))
 class NewsFlow(Flow[NewsState]):
 
     @start()
@@ -256,17 +256,17 @@ class NewsFlow(Flow[NewsState]):
 def kickoff():
     news_flow = NewsFlow()
     news_flow.kickoff(inputs={
-        'id': 'test_jsonconsolidation', # use an id if you want to start from the latest checkpoint
-        'start_from_method': 'counter_args', # use this parameter to start from a specific method (starts after this one)
+        'id': 'first_run', # use an id if you want to start from the latest checkpoint
         'num_starting_pool_news': 2,
         'num_max_news': 1,
-        'topic': 'Depression in straight men between 30-50 years old',
-        # 'topic': 'Articificial Intelligence business case ROI in Banks',
-        # 'topic': 'Climate Change in Colombia',
-        # 'topic': 'Economic outlook of Peru',
         'perspective': 'Positive, optimistic',
         'tone': 'Scientific, informative',
-        'current_date': '2025-04-03'
+        'current_date': '2025-04-03',
+        # 'topic': 'Depression in straight men between 30-50 years old',
+        # 'topic': 'Articificial Intelligence business case ROI in Banks',
+        'topic': 'Climate Change in Colombia',
+        # 'topic': 'Economic outlook of Peru',
+        #'start_from_method': 'counter_args', # use this parameter to start from a specific method (starts after this one)
     })
 
     print("------ Flow completed ------")

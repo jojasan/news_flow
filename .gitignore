@@ -20,4 +20,5 @@ Thumbs.db
 desktop.ini
 
 # Outputs folder (dynamically generated files)
-src/news_flow/outputs/
+src/news_flow/outputs/*
+!src/news_flow/outputs/.gitkeep
