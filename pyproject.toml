@@ -8,6 +8,7 @@ dependencies = [
     "crewai[tools]>=0.108.0,<1.0.0",
     "fastapi[standard]>=0.115.11",
     "firecrawl-py>=1.15.0",
+    "pip>=25.0.1",
 ]
 
 [project.scripts]

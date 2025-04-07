@@ -1,5 +1,6 @@
 from typing import List, Optional
 from fastapi import FastAPI, BackgroundTasks, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from news_flow.main import NewsFlow
 
@@ -16,6 +17,21 @@ class Task(BaseModel):
     tone: Optional[str] = ''
 
 app = FastAPI()
+
+# CORS Middleware Configuration
+origins = [
+    "http://localhost", # Allow localhost without port
+    "http://localhost:8080", # Allow your frontend origin (adjust port if needed)
+    # Add any other origins you need to allow (e.g., your deployed frontend URL)
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"], # Allow all methods (GET, POST, etc.)
+    allow_headers=["*"], # Allow all headers
+)
 
 @app.post("/happifynews")
 async def happify_news(task: Task, background_tasks: BackgroundTasks):

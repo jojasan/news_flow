@@ -45,7 +45,7 @@ class ResearchCrew:
                 ],
             ),
             tools=[serper_search, firecrawl],
-            max_rpm=5,
+            max_rpm=10,
             verbose=True
         )
     
@@ -67,7 +67,7 @@ class ResearchCrew:
                 ],
             ),
             tools=[brave_search, firecrawl],
-            max_rpm=5,
+            max_rpm=10,
             verbose=True
         )
     
@@ -99,7 +99,7 @@ class ResearchCrew:
         return Task(
             config=self.tasks_config["find_supporting_resources_task"],
             async_execution=True,
-            output_pydantic=SupportingEvidence
+            # output_pydantic=SupportingEvidence
         )
     
     @task
@@ -107,7 +107,7 @@ class ResearchCrew:
         return Task(
             config=self.tasks_config["find_supporting_resources_task_2"],
             async_execution=True,
-            output_pydantic=SupportingEvidence
+            #output_pydantic=SupportingEvidence
         )
     
     @task

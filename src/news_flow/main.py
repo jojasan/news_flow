@@ -4,10 +4,11 @@ from typing import Dict, Any, List, Optional
 
 # Third-Party Imports (CrewAI, Pydantic, etc.)
 from pydantic import BaseModel
-from crewai.flow import Flow, listen, start, persist, router
+from crewai.flow import Flow, listen, start, persist, router, or_
 
 # Application-Specific Imports (News Flow Modules)
 from news_flow.crews.a_discover_crew.discover_crew import DiscoverCrew
+from news_flow.crews.a_scrape_crew.scrape_crew import ScrapeCrew
 from news_flow.crews.b_planning_crew.planning_crew import PlanningCrew
 from news_flow.crews.c_research_crew.research_crew import ResearchCrew
 from news_flow.crews.d_counterargs_crew.counterargs_crew import CounterArgumentsCrew
@@ -23,7 +24,21 @@ from news_flow.utils import (
     consolidate_news_json,
     cleanup_consolidated_json,
 )
-from news_flow.crewai_extensions import SQLiteFlowPersistenceJSON # this is a patched version of the SQLiteFlowPersistence class that uses JSON serialization
+
+# --- Apply Patches ---
+# Patch SQLite persistence for robust JSON handling
+from news_flow.crewai_extensions import SQLiteFlowPersistenceJSON
+# Patch LiteLLM completion to handle empty responses
+import news_flow.crewai_extensions # IMPORTANT: Importing this executes the patch
+if not news_flow.crewai_extensions.is_litellm_patched():
+    print("\nWARNING: LiteLLM empty response patch FAILED to apply! Fallbacks for empty responses might not work.\n")
+# # Patch JSON parsing (Optional - uncomment if needed)
+# import crewai.utilities.converter
+# from news_flow.crewai_extensions import patched_handle_partial_json
+# print("Applying monkey patch to crewai.utilities.converter.handle_partial_json...")
+# crewai.utilities.converter.handle_partial_json = patched_handle_partial_json
+# print("Patch applied.")
+# --- End Patches ---
 
 class NewsState(BaseModel):
     id: str = ''
@@ -31,7 +46,8 @@ class NewsState(BaseModel):
     num_starting_pool_news: int = 2
     num_max_news: int = 1
     topic: str = '' 
-    perspective: str = ''
+    urls: List[str] = []
+    perspective: str = 'Optimistic, positive, happy'
     tone: str = ''
     news_list: Optional[NewsList] = None
     plan: List[NewsResearchPlan] = []
@@ -57,17 +73,20 @@ class NewsFlow(Flow[NewsState]):
     @router(initialize)
     def load_state(self):
         print("Trying to load state from database...")
-        if self.state.start_from_method: # this only works if I have patched crewAI to accept start from method
-            print(f"Starting from method: {self.state.start_from_method}")
-            return self.state.start_from_method  # Resume from the provided method
-        elif self.state.current_step != 'initialize':
+        if self.state.current_step != 'initialize':
             print(f"Resuming from latest step: {self.state.current_step}")
-            return self.state.current_step  # Resume from the latest checkpoint
+            return self.state.current_step  # Resume from the latest checkpoint. TODO: actually need to map from method names to event names
+        elif self.state.topic:
+            print("Topic provided, starting with discover step.")
+            return 'discover'
+        elif self.state.urls:
+            print("URLs provided, starting with scrape step.")
+            return 'scrape'
         else:
-            print("No start_from_method provided and no checkpoint found")
-            return 'start_from_beginning'  # Fallback if no checkpoint exists
+            print("ERROR: No valid starting point found. Provide either a topic, URLs, or resume from a previous checkpoint.")
+            raise ValueError("Unable to determine the starting point for the News Flow. Please provide a topic or URLs, or ensure a valid checkpoint exists.")
 
-    @listen('start_from_beginning')
+    @listen('discover')
     def discover_news(self):
         print("Discovering news")
         result = (
@@ -86,7 +105,22 @@ class NewsFlow(Flow[NewsState]):
         save_flow_step_output(result.pydantic, 'news_list.json')
         self.state.current_step = "discover_news"
 
-    @listen(discover_news)
+    @listen('scrape')
+    def scrape_news(self):
+        print("Scraping news")
+        result = (
+            ScrapeCrew().crew()
+            .kickoff(inputs={"urls": self.state.urls[0]}) # for now only one url
+        )
+
+        print("Saving state variables")
+        self.state.news_list = result.pydantic
+        self.state.flow_tokens['scrape_news'] = {"prompt_tokens": result.token_usage.prompt_tokens, 
+                                                   "completion_tokens": result.token_usage.completion_tokens}
+        save_flow_step_output(result.pydantic, 'news_list.json')
+        self.state.current_step = "scrape_news"
+
+    @listen(or_(scrape_news, discover_news))
     def plan_research(self):
 
         # preparing the news list for the next crew
@@ -256,16 +290,17 @@ class NewsFlow(Flow[NewsState]):
 def kickoff():
     news_flow = NewsFlow()
     news_flow.kickoff(inputs={
-        'id': 'first_run', # use an id if you want to start from the latest checkpoint
+        'id': 'run_url3', # use an id if you want to start from the latest checkpoint
         'num_starting_pool_news': 2,
         'num_max_news': 1,
         'perspective': 'Positive, optimistic',
         'tone': 'Scientific, informative',
-        'current_date': '2025-04-03',
+        'current_date': '2025-04-05',
         # 'topic': 'Depression in straight men between 30-50 years old',
         # 'topic': 'Articificial Intelligence business case ROI in Banks',
-        'topic': 'Climate Change in Colombia',
+        # 'topic': 'Climate Change in Colombia',
         # 'topic': 'Economic outlook of Peru',
+        'urls': ['https://edition.cnn.com/2025/04/05/business/trump-reciprocal-tariffs-real-numbers/index.html']
         #'start_from_method': 'counter_args', # use this parameter to start from a specific method (starts after this one)
     })
 

@@ -8,7 +8,7 @@ class NewsWithSources(BaseModel):
     content: str = Field(..., description="The original unmodified content of the news from the source.")
 
 class NewsList(BaseModel):
-    news_list: List[NewsWithSources] = Field(..., description="A list of news each with their sources.")
+    news_list: List[NewsWithSources] = Field(..., description="A list of news objects (typed as NewsWithSources)")
 
 class KeyIdea(BaseModel):
     key_idea: str = Field(..., description="The key idea extracted from the news.")

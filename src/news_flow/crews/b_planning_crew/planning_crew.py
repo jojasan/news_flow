@@ -30,19 +30,15 @@ class PlanningCrew:
             config=self.agents_config["editorial_analyst"],
             llm=LLM(
                 model="openai/o3-mini", 
-                num_retries=2,
+                num_retries=3,
                 fallbacks=[
-                    {
-                        "model": "openrouter/google/gemini-2.0-flash-001",
-                        "base_url": "https://openrouter.ai/api/v1",
-                    },
                     {
                         "model": "openai/gpt-4o"
                     },
                 ],
             ),
             tools=[firecrawl],
-            max_rpm=4,
+            max_rpm=10,
             verbose=True
         )
 
@@ -85,5 +81,4 @@ class PlanningCrew:
             tasks=self.tasks,  # Automatically created by the @task decorator
             process=Process.sequential,
             verbose=True,
-            # output_log_file="planning_crew_logs.txt"
         )
