@@ -20,7 +20,7 @@ search_specialized_sources_task:
 
 general_web_search_task:
   description: >
-    Identify top news about {topic} by searching the web via Google and provide a list of 
+    Identify top news about {topic} by searching the web via search engines and provide a list of 
     the most relevant and recent news articles. Make sure to search for recent news articles. Current date: {current_date}.
   expected_output: >
     A list of {num_starting_pool_news} news articles from specialized sources about {topic}, each with 

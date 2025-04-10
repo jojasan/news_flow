@@ -2,12 +2,15 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from news_flow.types import SupportingEvidence
 from crewai.llm import LLM
-from news_flow.tools import serper_search, brave_search, firecrawl
+from news_flow.tools import serper_search, brave_search, firecrawl, tavily_scrape
 
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
 # https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
 
+import litellm
+litellm._turn_on_debug()
+litellm.set_verbose = True
 
 @CrewBase
 class ResearchCrew:
@@ -54,7 +57,7 @@ class ResearchCrew:
                     },
                 ],
             ),
-            tools=[brave_search, firecrawl],
+            tools=[brave_search, tavily_scrape],
             max_rpm=10,
             verbose=True
         )

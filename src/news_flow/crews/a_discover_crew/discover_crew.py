@@ -2,7 +2,7 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from news_flow.types import NewsList
 from crewai.llm import LLM
-from news_flow.tools import serper_search, firecrawl
+from news_flow.tools import serper_search, firecrawl, tavily_search, tavily_scrape
 
 @CrewBase
 class DiscoverCrew:
@@ -27,6 +27,7 @@ class DiscoverCrew:
                     },
                 ],
             ),
+            max_iter=5,
             tools=[serper_search, firecrawl],
             verbose=True
         )
@@ -48,7 +49,8 @@ class DiscoverCrew:
                     }
                 ],
             ),
-            tools=[serper_search, firecrawl],
+            max_iter=5,
+            tools=[tavily_search, tavily_scrape],
             verbose=True
         )
 
@@ -60,17 +62,17 @@ class DiscoverCrew:
         )
 
     @task
-    def search_specialized_sources_task(self) -> Task:
-        return Task(
-            config=self.tasks_config["search_specialized_sources_task"],
-            context=[self.identify_news_outlets_task()]
-        )
-    
-    @task
     def general_web_search_task(self) -> Task:
         return Task(
             config=self.tasks_config["general_web_search_task"],
             async_execution=True
+        )
+    
+    @task
+    def search_specialized_sources_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["search_specialized_sources_task"],
+            context=[self.identify_news_outlets_task()]
         )
     
     @task

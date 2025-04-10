@@ -25,10 +25,10 @@ from news_flow.utils import (
 # Patch SQLite persistence for robust JSON handling
 from news_flow.crewai_extensions import SQLiteFlowPersistenceJSON
 # Patch LiteLLM completion to handle empty responses
-import news_flow.crewai_extensions # IMPORTANT: Importing this executes the patch
-if not news_flow.crewai_extensions.is_litellm_patched():
+# import news_flow.crewai_extensions # IMPORTANT: Importing this executes the patch
+# if not news_flow.crewai_extensions.is_litellm_patched():
     # Use logging for warnings
-    logging.warning("\nWARNING: LiteLLM empty response patch FAILED to apply! Fallbacks for empty responses might not work.\n")
+#     logging.warning("\nWARNING: LiteLLM empty response patch FAILED to apply! Fallbacks for empty responses might not work.\n")
 # # Patch JSON parsing (Optional - uncomment if needed)
 # import crewai.utilities.converter
 # from news_flow.crewai_extensions import patched_handle_partial_json
@@ -292,7 +292,7 @@ def kickoff():
 
     news_flow = NewsFlow()
     news_flow.kickoff(inputs={
-        'id': 'refactored_id', # use an id if you want to start from the latest checkpoint
+        'id': 'with_tavily', # use an id if you want to start from the latest checkpoint
         'num_starting_pool_news': 2,
         'num_max_news': 1,
         'perspective': 'Positive, optimistic',
@@ -300,9 +300,9 @@ def kickoff():
         'current_date': '2025-04-05',
         # 'topic': 'Depression in straight men between 30-50 years old',
         # 'topic': 'Articificial Intelligence business case ROI in Banks',
-        # 'topic': 'Climate Change in Colombia',
+        'topic': 'Climate Change in Colombia',
         # 'topic': 'Economic outlook of Peru',
-        'urls': ['https://edition.cnn.com/2025/04/05/business/trump-reciprocal-tariffs-real-numbers/index.html']
+        # 'urls': ['https://edition.cnn.com/2025/04/05/business/trump-reciprocal-tariffs-real-numbers/index.html']
         #'start_from_method': 'counter_args', # use this parameter to start from a specific method (starts after this one)
     })
 
