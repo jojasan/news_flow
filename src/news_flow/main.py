@@ -1,5 +1,6 @@
 # Standard Library Imports
 import json
+import logging
 from typing import Dict, Any, List, Optional
 
 # Third-Party Imports (CrewAI, Pydantic, etc.)
@@ -26,13 +27,14 @@ from news_flow.crewai_extensions import SQLiteFlowPersistenceJSON
 # Patch LiteLLM completion to handle empty responses
 import news_flow.crewai_extensions # IMPORTANT: Importing this executes the patch
 if not news_flow.crewai_extensions.is_litellm_patched():
-    print("\nWARNING: LiteLLM empty response patch FAILED to apply! Fallbacks for empty responses might not work.\n")
+    # Use logging for warnings
+    logging.warning("\nWARNING: LiteLLM empty response patch FAILED to apply! Fallbacks for empty responses might not work.\n")
 # # Patch JSON parsing (Optional - uncomment if needed)
 # import crewai.utilities.converter
 # from news_flow.crewai_extensions import patched_handle_partial_json
-# print("Applying monkey patch to crewai.utilities.converter.handle_partial_json...")
+# logging.info("Applying monkey patch to crewai.utilities.converter.handle_partial_json...") # Changed print to logging.info
 # crewai.utilities.converter.handle_partial_json = patched_handle_partial_json
-# print("Patch applied.")
+# logging.info("Patch applied.") # Changed print to logging.info
 # --- End Patches ---
 
 class NewsState(BaseModel):
@@ -60,30 +62,30 @@ class NewsFlow(Flow[NewsState]):
     @start()
     def initialize(self):
         # TODO beautify printing, remove content, summarize Lists (just give counts)
-        print(f"Initializing flow with these parameters: {self.state}")
+        logging.info("Initializing flow with these parameters: %s", self.state)
         # TODO add more initialization logic here: load via config how much paralellism to use, log verbosity, crewai verbosity
         if self.state.current_step == '':
             self.state.current_step = "initialize"
     
     @router(initialize)
     def load_state(self):
-        print("Trying to load state from database...")
+        logging.info("Trying to load state from database...")
         if self.state.current_step != 'initialize':
-            print(f"Resuming from latest step: {self.state.current_step}")
+            logging.info("Resuming from latest step: %s", self.state.current_step)
             return self.state.current_step  # Resume from the latest checkpoint. TODO: actually need to map from method names to event names
         elif self.state.topic:
-            print("Topic provided, starting with discover step.")
+            logging.info("Topic provided, starting with discover step.")
             return 'discover'
         elif self.state.urls:
-            print("URLs provided, starting with scrape step.")
+            logging.info("URLs provided, starting with scrape step.")
             return 'scrape'
         else:
-            print("ERROR: No valid starting point found. Provide either a topic, URLs, or resume from a previous checkpoint.")
+            logging.error("No valid starting point found. Provide either a topic, URLs, or resume from a previous checkpoint.")
             raise ValueError("Unable to determine the starting point for the News Flow. Please provide a topic or URLs, or ensure a valid checkpoint exists.")
 
     @listen('discover')
     def discover_news(self):
-        print("Discovering news")
+        logging.info("Discovering news")
         result = (
             DiscoverCrew().crew()
             .kickoff(inputs={"topic": self.state.topic, 
@@ -93,7 +95,7 @@ class NewsFlow(Flow[NewsState]):
                              "perspective": self.state.perspective,})
         )
         
-        print("Saving state variables")
+        logging.info("Saving state variables for discover_news")
         self.state.news_list = result.pydantic
         self.state.flow_tokens['discover_news'] = {"prompt_tokens": result.token_usage.prompt_tokens, 
                                                    "completion_tokens": result.token_usage.completion_tokens}
@@ -102,13 +104,13 @@ class NewsFlow(Flow[NewsState]):
 
     @listen('scrape')
     def scrape_news(self):
-        print("Scraping news")
+        logging.info("Scraping news")
         result = (
             ScrapeCrew().crew()
             .kickoff(inputs={"urls": self.state.urls[0]}) # for now only one url
         )
 
-        print("Saving state variables")
+        logging.info("Saving state variables for scrape_news")
         self.state.news_list = result.pydantic
         self.state.flow_tokens['scrape_news'] = {"prompt_tokens": result.token_usage.prompt_tokens, 
                                                    "completion_tokens": result.token_usage.completion_tokens}
@@ -130,14 +132,14 @@ class NewsFlow(Flow[NewsState]):
             }
             for news in self.state.news_list.news_list
         ]
-        print(f"Planning research for {len(news_list_dicts)} news")
+        logging.info("Planning research for %d news items", len(news_list_dicts))
 
         results = (
             PlanningCrew().crew()
             .kickoff_for_each(inputs=news_list_dicts)
         )
 
-        print("Saving state variables")
+        logging.info("Saving state variables for plan_research")
         prompt_tokens = 0
         completion_tokens = 0
         for plan in results:
@@ -151,9 +153,9 @@ class NewsFlow(Flow[NewsState]):
 
     @listen(plan_research)
     def research_news(self):
-        print("Starting research...")
+        logging.info("Starting research...")
         for plan in self.state.plan: # iterate over each plan (one for each news item)
-            print(f"--> Kicking off research crews for article: {plan.news_title}")
+            logging.info("--> Kicking off research crews for article: %s", plan.news_title)
             
             key_idea_dicts = [
                 {
@@ -172,8 +174,8 @@ class NewsFlow(Flow[NewsState]):
                 .kickoff_for_each(inputs=key_idea_dicts) # kick off crews for each key idea and save results
             )
 
-        print("----Finished researching news----")
-        print("Saving state variables")
+        logging.info("----Finished researching news----")
+        logging.info("Saving state variables for research_news")
         prompt_tokens = 0
         completion_tokens = 0
         i = 0
@@ -189,9 +191,9 @@ class NewsFlow(Flow[NewsState]):
 
     @listen(research_news)
     def counter_args(self):
-        print("Starting counter args...")
+        logging.info("Starting counter args...")
         for plan in self.state.plan: # iterate over each plan (one for each news item)
-            print(f"--> Kicking off counterargs crews for article: {plan.news_title}")
+            logging.info("--> Kicking off counterargs crews for article: %s", plan.news_title)
             
             counterargs_dicts = [
                 {
@@ -209,8 +211,8 @@ class NewsFlow(Flow[NewsState]):
                 .kickoff_for_each(inputs=counterargs_dicts) # kick off crews for each key idea and save results
             )
         
-        print("----Finished finding counterargs support----")
-        print("Saving state variables")
+        logging.info("----Finished finding counterargs support----")
+        logging.info("Saving state variables for counter_args")
         prompt_tokens = 0
         completion_tokens = 0
         i = 0
@@ -226,7 +228,7 @@ class NewsFlow(Flow[NewsState]):
         
     @listen(counter_args)
     def write_articles(self):
-        print("Starting writing articles")
+        logging.info("Starting writing articles")
         # Use the new function which returns a plain dict.
         news_json = consolidate_news_json(
             self.state.news_evidence,
@@ -283,9 +285,14 @@ class NewsFlow(Flow[NewsState]):
         return self.state
 
 def kickoff():
+    # Basic logging configuration
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S')
+
     news_flow = NewsFlow()
     news_flow.kickoff(inputs={
-        'id': 'run_url3', # use an id if you want to start from the latest checkpoint
+        'id': 'refactored_id', # use an id if you want to start from the latest checkpoint
         'num_starting_pool_news': 2,
         'num_max_news': 1,
         'perspective': 'Positive, optimistic',
@@ -299,10 +306,11 @@ def kickoff():
         #'start_from_method': 'counter_args', # use this parameter to start from a specific method (starts after this one)
     })
 
-    print("------ Flow completed ------")
+    # Use logging for completion messages
+    logging.info("------ Flow completed ------")
     total_cost = calculate_tokens_usage(news_flow.state.flow_tokens)
-    print(f"-----> Total cost of the flow: ~${total_cost['total_costs']:.4f}")
-    print(f"-----> Total tokens used: {total_cost['total_tokens']}")
+    logging.info(f"-----> Total cost of the flow: ~${total_cost['total_costs']:.4f}")
+    logging.info(f"-----> Total tokens used: {total_cost['total_tokens']}")
 
 def plot():
     news_flow = NewsFlow()
