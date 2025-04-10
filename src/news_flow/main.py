@@ -7,12 +7,7 @@ from pydantic import BaseModel
 from crewai.flow import Flow, listen, start, persist, router, or_
 
 # Application-Specific Imports (News Flow Modules)
-from news_flow.crews.a_discover_crew.discover_crew import DiscoverCrew
-from news_flow.crews.a_scrape_crew.scrape_crew import ScrapeCrew
-from news_flow.crews.b_planning_crew.planning_crew import PlanningCrew
-from news_flow.crews.c_research_crew.research_crew import ResearchCrew
-from news_flow.crews.d_counterargs_crew.counterargs_crew import CounterArgumentsCrew
-from news_flow.crews.e_writer_crew.writer_crew import WriterCrew
+from news_flow.crews import *
 from news_flow.types import (
     NewsList, NewsResearchPlan, SupportingEvidence, CounterArgumentSources
 )
