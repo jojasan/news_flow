@@ -1,20 +1,8 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from crewai_tools import SerperDevTool, ScrapeWebsiteTool, YoutubeChannelSearchTool, YoutubeVideoSearchTool, BraveSearchTool
-# from news_flow.tools.Crawl4AI import Crawl4AITool
 from news_flow.types import SupportingEvidence
 from crewai.llm import LLM
-from crewai_tools import FirecrawlScrapeWebsiteTool
-import os
-from dotenv import load_dotenv
-load_dotenv()  # Load environment variables from .env file
-
-# Tools
-serper_search = SerperDevTool()
-brave_search = BraveSearchTool()
-firecrawl = FirecrawlScrapeWebsiteTool(
-    api_key=os.getenv("FIRECRAWL_API_KEY")
-)
+from news_flow.tools import serper_search, brave_search, firecrawl
 
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators

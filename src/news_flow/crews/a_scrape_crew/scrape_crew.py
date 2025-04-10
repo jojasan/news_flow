@@ -2,15 +2,7 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from news_flow.types import NewsList
 from crewai.llm import LLM
-from crewai_tools import FirecrawlScrapeWebsiteTool
-import os
-from dotenv import load_dotenv
-load_dotenv()  # Load environment variables from .env file
-
-# Tools
-firecrawl = FirecrawlScrapeWebsiteTool(
-    api_key=os.getenv("FIRECRAWL_API_KEY")
-)
+from news_flow.tools import firecrawl
 
 @CrewBase
 class ScrapeCrew:
