@@ -17,7 +17,7 @@ class WriterCrew:
     @agent
     def expert_writer(self) -> Agent:
         return Agent(
-            config=self.agents_config["expert_writer"],
+            config=self.agents_config["e_write"]["expert_writer"],
             llm=o3_mini_high_reasoning(),
             verbose=True
         )
@@ -25,7 +25,7 @@ class WriterCrew:
     @task
     def write_article_task(self) -> Task:
         return Task(
-            config=self.tasks_config["write_article_task"],
+            config=self.tasks_config["e_write"]["write_article_task"],
         )
     
     @crew

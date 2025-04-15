@@ -17,7 +17,7 @@ class DiscoverCrew:
     @agent
     def topic_expert(self) -> Agent:
         return Agent(
-            config=self.agents_config["topic_expert"],
+            config=self.agents_config["a_discover"]["topic_expert"],
             llm=o3_mini_with_gemini_flash_fallback(),
             max_iter=5,
             tools=[serper_search, firecrawl],
@@ -27,7 +27,7 @@ class DiscoverCrew:
     @agent
     def research_analyst(self) -> Agent:
         return Agent(
-            config=self.agents_config["research_analyst"],
+            config=self.agents_config["a_discover"]["research_analyst"],
             llm=gemini_flash_with_gpt4o_mini_fallback(),
             max_iter=5,
             tools=[tavily_search, tavily_scrape],
@@ -37,28 +37,28 @@ class DiscoverCrew:
     @task
     def identify_news_outlets_task(self) -> Task:
         return Task(
-            config=self.tasks_config["identify_news_outlets_task"],
+            config=self.tasks_config["a_discover"]["identify_news_outlets_task"],
             async_execution=True,
         )
 
     @task
     def general_web_search_task(self) -> Task:
         return Task(
-            config=self.tasks_config["general_web_search_task"],
+            config=self.tasks_config["a_discover"]["general_web_search_task"],
             async_execution=True
         )
     
     @task
     def search_specialized_sources_task(self) -> Task:
         return Task(
-            config=self.tasks_config["search_specialized_sources_task"],
+            config=self.tasks_config["a_discover"]["search_specialized_sources_task"],
             context=[self.identify_news_outlets_task()]
         )
     
     @task
     def prioritize_news_task(self) -> Task:
         return Task(
-            config=self.tasks_config["prioritize_news_task"],
+            config=self.tasks_config["a_discover"]["prioritize_news_task"],
             context=[self.search_specialized_sources_task(), self.general_web_search_task()], 
             output_pydantic=NewsList,
         )
@@ -74,5 +74,4 @@ class DiscoverCrew:
             tasks=self.tasks,  # Automatically created by the @task decorator
             process=Process.sequential,
             verbose=True,
-            # output_log_file="discover_crew_logs.txt"
         )

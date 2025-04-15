@@ -18,7 +18,7 @@ class CounterArgumentsCrew:
     @agent
     def web_research_analyst(self) -> Agent:
         return Agent(
-            config=self.agents_config["web_research_analyst"],
+            config=self.agents_config["d_counterargs"]["web_research_analyst"],
             llm=gemini_flash_with_gpt4o_mini_fallback(),
             tools=[serper_search, firecrawl],
             max_rpm=4,
@@ -28,7 +28,7 @@ class CounterArgumentsCrew:
     @agent
     def web_research_analyst_2(self) -> Agent:
         return Agent(
-            config=self.agents_config["web_research_analyst_2"],
+            config=self.agents_config["d_counterargs"]["web_research_analyst_2"],
             llm=gpt4o_mini_with_gemini_flash_fallback(),
             tools=[brave_search, tavily_scrape],
             max_rpm=4,
@@ -38,7 +38,7 @@ class CounterArgumentsCrew:
     @agent
     def research_lead(self) -> Agent:
         return Agent(
-            config=self.agents_config["research_lead"],
+            config=self.agents_config["d_counterargs"]["research_lead"],
             llm=o3_mini_with_gemini_flash_fallback(),
             tools=[serper_search, firecrawl],
             max_iter=5,
@@ -48,7 +48,7 @@ class CounterArgumentsCrew:
     @task
     def research_counterarguments_task(self) -> Task:
         return Task(
-            config=self.tasks_config["research_counterarguments_task"],
+            config=self.tasks_config["d_counterargs"]["research_counterarguments_task"],
             async_execution=True,
             output_pydantic=CounterArgumentSources
         )
@@ -56,7 +56,7 @@ class CounterArgumentsCrew:
     @task
     def research_counterarguments_task_2(self) -> Task:
         return Task(
-            config=self.tasks_config["research_counterarguments_task_2"],
+            config=self.tasks_config["d_counterargs"]["research_counterarguments_task_2"],
             async_execution=True,
             output_pydantic=CounterArgumentSources
         )
@@ -64,7 +64,7 @@ class CounterArgumentsCrew:
     @task
     def consolidate_counterarg_resources_task(self) -> Task:
         return Task(
-            config=self.tasks_config["consolidate_counterarg_resources_task"],
+            config=self.tasks_config["d_counterargs"]["consolidate_counterarg_resources_task"],
             context=[self.research_counterarguments_task(), self.research_counterarguments_task_2()],
             output_pydantic=CounterArgumentSources
         )

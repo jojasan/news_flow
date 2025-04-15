@@ -14,7 +14,7 @@ class PlanningCrew:
     @agent
     def editorial_analyst(self) -> Agent:
         return Agent(
-            config=self.agents_config["editorial_analyst"],
+            config=self.agents_config["b_plan"]["editorial_analyst"],
             llm=o3_mini_with_gpt4o_fallback(),
             max_rpm=10,
             verbose=True
@@ -23,28 +23,28 @@ class PlanningCrew:
     @task
     def elicit_key_ideas_task(self) -> Task:
         return Task(
-            config=self.tasks_config["elicit_key_ideas_task"],
+            config=self.tasks_config["b_plan"]["elicit_key_ideas_task"],
             output_pydantic=Ideas,
         )
     
     @task
     def elicit_datapoints_task(self) -> Task:
         return Task(
-            config=self.tasks_config["elicit_datapoints_task"],
+            config=self.tasks_config["b_plan"]["elicit_datapoints_task"],
             output_pydantic=Datapoints,
         )
     
     @task
     def create_counterarguments_task(self) -> Task:
         return Task(
-            config=self.tasks_config["create_counterarguments_task"],
+            config=self.tasks_config["b_plan"]["create_counterarguments_task"],
             output_pydantic=CounterArguments,
         )
     
     @task
     def consolidate_analysis_task(self) -> Task:
         return Task(
-            config=self.tasks_config["consolidate_analysis_task"],
+            config=self.tasks_config["b_plan"]["consolidate_analysis_task"],
             output_pydantic=NewsResearchPlan,
         )
 

@@ -292,15 +292,16 @@ def kickoff():
 
     news_flow = NewsFlow()
     news_flow.kickoff(inputs={
-        'id': 'mac_run1', # use an id if you want to start from the latest checkpoint
+        'id': 'mac_run3', # use an id if you want to start from the latest checkpoint
         'num_starting_pool_news': 2,
         'num_max_news': 1,
         'perspective': 'Positive, optimistic',
         'tone': 'Scientific, informative',
         'current_date': '2025-04-05',
+        'topic': 'WIPO Patent Landscape for AI in Latam',
         # 'topic': 'Depression in straight men between 30-50 years old',
         # 'topic': 'Articificial Intelligence business case ROI in Banks',
-        'topic': 'Climate Change in Colombia',
+        # 'topic': 'Climate Change in Colombia',
         # 'topic': 'Economic outlook of Peru',
         # 'urls': ['https://edition.cnn.com/2025/04/05/business/trump-reciprocal-tariffs-real-numbers/index.html']
         #'start_from_method': 'counter_args', # use this parameter to start from a specific method (starts after this one)

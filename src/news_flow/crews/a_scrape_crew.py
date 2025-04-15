@@ -14,7 +14,7 @@ class ScrapeCrew:
     @agent
     def news_scraper(self) -> Agent:
         return Agent(
-            config=self.agents_config["news_scraper"],
+            config=self.agents_config["a_scrape"]["news_scraper"],
             llm=o3_mini_with_gpt4o_fallback(),
             tools=[firecrawl],
             verbose=True
@@ -23,7 +23,7 @@ class ScrapeCrew:
     @task
     def scrape_news_task(self) -> Task:
         return Task(
-            config=self.tasks_config["scrape_news_task"],
+            config=self.tasks_config["a_scrape"]["scrape_news_task"],
             output_pydantic=NewsList,
         )
     

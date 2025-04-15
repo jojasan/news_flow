@@ -22,7 +22,7 @@ class ResearchCrew:
     @agent
     def web_research_analyst(self) -> Agent:
         return Agent(
-            config=self.agents_config["web_research_analyst"],
+            config=self.agents_config["c_research"]["web_research_analyst"],
             llm=gemini_flash_with_gpt4o_mini_fallback(),
             tools=[serper_search, firecrawl],
             max_rpm=6, # to not overwhelm the firecrawl API
@@ -32,7 +32,7 @@ class ResearchCrew:
     @agent
     def web_research_analyst_2(self) -> Agent:
         return Agent(
-            config=self.agents_config["web_research_analyst_2"],
+            config=self.agents_config["c_research"]["web_research_analyst_2"],
             llm=gpt4o_mini_with_gemini_flash_fallback(),
             tools=[brave_search, tavily_scrape],
             max_rpm=6, # to not overwhelm the tavily API
@@ -42,7 +42,7 @@ class ResearchCrew:
     @agent
     def research_lead(self) -> Agent:
         return Agent(
-            config=self.agents_config["research_lead"],
+            config=self.agents_config["c_research"]["research_lead"],
             llm=o3_mini_with_gemini_flash_fallback(),
             # allow_delegation=True,
             tools=[serper_search, firecrawl],
@@ -53,7 +53,7 @@ class ResearchCrew:
     @task
     def find_supporting_resources_task(self) -> Task:
         return Task(
-            config=self.tasks_config["find_supporting_resources_task"],
+            config=self.tasks_config["c_research"]["find_supporting_resources_task"],
             async_execution=True,
             # output_pydantic=SupportingEvidence
         )
@@ -61,7 +61,7 @@ class ResearchCrew:
     @task
     def find_supporting_resources_task_2(self) -> Task:
         return Task(
-            config=self.tasks_config["find_supporting_resources_task_2"],
+            config=self.tasks_config["c_research"]["find_supporting_resources_task_2"],
             async_execution=True,
             #output_pydantic=SupportingEvidence
         )
@@ -69,7 +69,7 @@ class ResearchCrew:
     @task
     def create_final_report(self) -> Task:
         return Task(
-            config=self.tasks_config["create_final_report"],
+            config=self.tasks_config["c_research"]["create_final_report"],
             context=[self.find_supporting_resources_task(),self.find_supporting_resources_task_2()],
             output_pydantic=SupportingEvidence
         )
