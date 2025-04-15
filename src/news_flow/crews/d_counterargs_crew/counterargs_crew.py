@@ -3,6 +3,11 @@ from crewai.project import CrewBase, agent, crew, task
 from news_flow.types import CounterArgumentSources
 from crewai.llm import LLM
 from news_flow.tools import serper_search, brave_search, firecrawl, tavily_scrape
+from news_flow.llm_configs import (
+    gemini_flash_with_gpt4o_mini_fallback,
+    gpt4o_mini_with_gemini_flash_fallback,
+    o3_mini_with_gemini_flash_fallback
+)
 
 @CrewBase
 class CounterArgumentsCrew:
@@ -14,19 +19,7 @@ class CounterArgumentsCrew:
     def web_research_analyst(self) -> Agent:
         return Agent(
             config=self.agents_config["web_research_analyst"],
-            llm=LLM(
-                model="openrouter/google/gemini-2.0-flash-001", 
-                base_url="https://openrouter.ai/api/v1",
-                num_retries=3,
-                fallbacks=[
-                    {
-                        "model": "openai/gpt-4o-mini"
-                    },
-                    {
-                        "model": "groq/llama-3.3-70b-versatile",
-                    }
-                ],
-            ),
+            llm=gemini_flash_with_gpt4o_mini_fallback(),
             tools=[serper_search, firecrawl],
             max_rpm=4,
             verbose=True
@@ -36,20 +29,7 @@ class CounterArgumentsCrew:
     def web_research_analyst_2(self) -> Agent:
         return Agent(
             config=self.agents_config["web_research_analyst_2"],
-            llm=LLM(
-                model="openai/gpt-4o-mini", 
-                num_retries=3,
-                fallbacks=[
-                    {
-                        "model": "openrouter/google/gemini-2.0-flash-001",
-                        "base_url": "https://openrouter.ai/api/v1",
-                    },
-                    {
-                        "model": "openrouter/meta-llama/llama-3.3-70b-instruct",
-                        "base_url": "https://openrouter.ai/api/v1",
-                    },
-                ],
-            ),
+            llm=gpt4o_mini_with_gemini_flash_fallback(),
             tools=[brave_search, tavily_scrape],
             max_rpm=4,
             verbose=True
@@ -59,19 +39,7 @@ class CounterArgumentsCrew:
     def research_lead(self) -> Agent:
         return Agent(
             config=self.agents_config["research_lead"],
-            llm=LLM(
-                model="openai/o3-mini", 
-                num_retries=3,
-                fallbacks=[
-                    {
-                        "model": "openrouter/google/gemini-2.0-flash-001",
-                        "base_url": "https://openrouter.ai/api/v1",
-                    },
-                    {
-                        "model": "openai/gpt-4o"
-                    },
-                ],
-            ),
+            llm=o3_mini_with_gemini_flash_fallback(),
             tools=[serper_search, firecrawl],
             max_iter=5,
             verbose=True

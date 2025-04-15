@@ -3,6 +3,10 @@ from crewai.project import CrewBase, agent, crew, task
 from news_flow.types import NewsList
 from crewai.llm import LLM
 from news_flow.tools import serper_search, firecrawl, tavily_search, tavily_scrape
+from news_flow.llm_configs import (
+    o3_mini_with_gemini_flash_fallback, 
+    gemini_flash_with_gpt4o_mini_fallback
+)
 
 @CrewBase
 class DiscoverCrew:
@@ -14,19 +18,7 @@ class DiscoverCrew:
     def topic_expert(self) -> Agent:
         return Agent(
             config=self.agents_config["topic_expert"],
-            llm=LLM(
-                model="openai/o3-mini", 
-                num_retries=3,
-                fallbacks=[
-                    {
-                        "model": "openrouter/google/gemini-2.0-flash-001",
-                        "base_url": "https://openrouter.ai/api/v1",
-                    },
-                    {
-                        "model": "openai/gpt-4o"
-                    },
-                ],
-            ),
+            llm=o3_mini_with_gemini_flash_fallback(),
             max_iter=5,
             tools=[serper_search, firecrawl],
             verbose=True
@@ -36,19 +28,7 @@ class DiscoverCrew:
     def research_analyst(self) -> Agent:
         return Agent(
             config=self.agents_config["research_analyst"],
-            llm=LLM(
-                model="openrouter/google/gemini-2.0-flash-001", 
-                base_url="https://openrouter.ai/api/v1",
-                num_retries=3,
-                fallbacks=[
-                    {
-                        "model": "openai/gpt-4o-mini",
-                    },
-                    {
-                        "model": "groq/llama-3.3-70b-versatile",
-                    }
-                ],
-            ),
+            llm=gemini_flash_with_gpt4o_mini_fallback(),
             max_iter=5,
             tools=[tavily_search, tavily_scrape],
             verbose=True

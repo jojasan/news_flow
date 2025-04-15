@@ -3,6 +3,7 @@ from crewai.project import CrewBase, agent, crew, task
 from news_flow.types import NewsList
 from crewai.llm import LLM
 from news_flow.tools import firecrawl
+from news_flow.llm_configs import o3_mini_with_gpt4o_fallback
 
 @CrewBase
 class ScrapeCrew:
@@ -14,15 +15,7 @@ class ScrapeCrew:
     def news_scraper(self) -> Agent:
         return Agent(
             config=self.agents_config["news_scraper"],
-            llm=LLM(
-                model="openai/o3-mini",
-                num_retries=3,
-                fallbacks=[
-                    {
-                        "model": "openai/gpt-4o"
-                    },
-                ],
-            ),
+            llm=o3_mini_with_gpt4o_fallback(),
             tools=[firecrawl],
             verbose=True
         )

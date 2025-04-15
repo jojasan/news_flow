@@ -3,6 +3,11 @@ from crewai.project import CrewBase, agent, crew, task
 from news_flow.types import SupportingEvidence
 from crewai.llm import LLM
 from news_flow.tools import serper_search, brave_search, firecrawl, tavily_scrape
+from news_flow.llm_configs import (
+    gemini_flash_with_gpt4o_mini_fallback,
+    gpt4o_mini_with_gemini_flash_fallback,
+    o3_mini_with_gemini_flash_fallback
+)
 
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
@@ -18,19 +23,7 @@ class ResearchCrew:
     def web_research_analyst(self) -> Agent:
         return Agent(
             config=self.agents_config["web_research_analyst"],
-            llm=LLM(
-                model="openrouter/google/gemini-2.0-flash-001", 
-                base_url="https://openrouter.ai/api/v1",
-                num_retries=3,
-                fallbacks=[
-                    {
-                        "model": "openai/gpt-4o-mini"
-                    },
-                    {
-                        "model": "groq/llama-3.3-70b-versatile",
-                    }
-                ],
-            ),
+            llm=gemini_flash_with_gpt4o_mini_fallback(),
             tools=[serper_search, firecrawl],
             max_rpm=6, # to not overwhelm the firecrawl API
             verbose=True
@@ -40,19 +33,7 @@ class ResearchCrew:
     def web_research_analyst_2(self) -> Agent:
         return Agent(
             config=self.agents_config["web_research_analyst_2"],
-            llm=LLM(
-                model="openai/gpt-4o-mini", 
-                num_retries=3,
-                fallbacks=[
-                    {
-                        "model": "openrouter/google/gemini-2.0-flash-001",
-                        "base_url": "https://openrouter.ai/api/v1",
-                    },
-                    {
-                        "model": "groq/llama-3.3-70b-versatile"
-                    },
-                ],
-            ),
+            llm=gpt4o_mini_with_gemini_flash_fallback(),
             tools=[brave_search, tavily_scrape],
             max_rpm=6, # to not overwhelm the tavily API
             verbose=True
@@ -62,19 +43,7 @@ class ResearchCrew:
     def research_lead(self) -> Agent:
         return Agent(
             config=self.agents_config["research_lead"],
-            llm=LLM(
-                model="openai/o3-mini", 
-                num_retries=3,
-                fallbacks=[
-                    {
-                        "model": "openrouter/google/gemini-2.0-flash-001",
-                        "base_url": "https://openrouter.ai/api/v1",
-                    },
-                    {
-                        "model": "openai/gpt-4o"
-                    },
-                ],
-            ),
+            llm=o3_mini_with_gemini_flash_fallback(),
             # allow_delegation=True,
             tools=[serper_search, firecrawl],
             max_iter=5,

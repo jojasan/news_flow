@@ -2,6 +2,7 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from news_flow.types import NewsResearchPlan, Ideas, Datapoints, CounterArguments
 from crewai.llm import LLM
+from news_flow.llm_configs import o3_mini_with_gpt4o_fallback
 
 
 @CrewBase
@@ -14,15 +15,7 @@ class PlanningCrew:
     def editorial_analyst(self) -> Agent:
         return Agent(
             config=self.agents_config["editorial_analyst"],
-            llm=LLM(
-                model="openai/o3-mini", 
-                num_retries=3,
-                fallbacks=[
-                    {
-                        "model": "openai/gpt-4o"
-                    },
-                ],
-            ),
+            llm=o3_mini_with_gpt4o_fallback(),
             max_rpm=10,
             verbose=True
         )
