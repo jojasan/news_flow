@@ -2,7 +2,7 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from news_flow.types import CounterArgumentSources
 from crewai.llm import LLM
-from news_flow.tools import serper_search, brave_search, firecrawl
+from news_flow.tools import serper_search, brave_search, firecrawl, tavily_scrape
 
 @CrewBase
 class CounterArgumentsCrew:
@@ -50,7 +50,7 @@ class CounterArgumentsCrew:
                     },
                 ],
             ),
-            tools=[brave_search, firecrawl],
+            tools=[brave_search, tavily_scrape],
             max_rpm=4,
             verbose=True
         )

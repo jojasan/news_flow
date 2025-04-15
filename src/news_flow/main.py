@@ -89,7 +89,7 @@ class NewsFlow(Flow[NewsState]):
         result = (
             DiscoverCrew().crew()
             .kickoff(inputs={"topic": self.state.topic, 
-                             "num_starting_news": self.state.num_starting_pool_news, 
+                             "num_starting_pool_news": self.state.num_starting_pool_news, 
                              "num_max_news": self.state.num_max_news,
                              "current_date": self.state.current_date,
                              "perspective": self.state.perspective,})
@@ -292,7 +292,7 @@ def kickoff():
 
     news_flow = NewsFlow()
     news_flow.kickoff(inputs={
-        'id': 'with_tavily', # use an id if you want to start from the latest checkpoint
+        'id': 'mac_run1', # use an id if you want to start from the latest checkpoint
         'num_starting_pool_news': 2,
         'num_max_news': 1,
         'perspective': 'Positive, optimistic',

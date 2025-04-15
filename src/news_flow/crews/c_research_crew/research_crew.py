@@ -8,10 +8,6 @@ from news_flow.tools import serper_search, brave_search, firecrawl, tavily_scrap
 # you can use the @before_kickoff and @after_kickoff decorators
 # https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
 
-import litellm
-litellm._turn_on_debug()
-litellm.set_verbose = True
-
 @CrewBase
 class ResearchCrew:
     """Research Crew"""
@@ -36,7 +32,7 @@ class ResearchCrew:
                 ],
             ),
             tools=[serper_search, firecrawl],
-            max_rpm=10,
+            max_rpm=6, # to not overwhelm the firecrawl API
             verbose=True
         )
     
@@ -58,7 +54,7 @@ class ResearchCrew:
                 ],
             ),
             tools=[brave_search, tavily_scrape],
-            max_rpm=10,
+            max_rpm=6, # to not overwhelm the tavily API
             verbose=True
         )
     

@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, Optional, Type, Union
 
 from crewai.flow.persistence.sqlite import SQLiteFlowPersistence
-from crewai.flow.state_utils import to_serializable
+from crewai.utilities.serialization import to_serializable
 from pydantic import BaseModel, ValidationError
 
 # Necessary imports from crewai.utilities.converter

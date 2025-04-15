@@ -2,7 +2,6 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from news_flow.types import NewsResearchPlan, Ideas, Datapoints, CounterArguments
 from crewai.llm import LLM
-from news_flow.tools import firecrawl
 
 
 @CrewBase
@@ -24,7 +23,6 @@ class PlanningCrew:
                     },
                 ],
             ),
-            tools=[firecrawl],
             max_rpm=10,
             verbose=True
         )
