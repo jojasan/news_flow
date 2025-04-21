@@ -16,8 +16,8 @@ from news_flow.llm_configs import (
 @CrewBase
 class ResearchCrew:
     """Research Crew"""
-    agents_config = "config/d_research_agents.yaml"
-    tasks_config = "config/d_research_tasks.yaml"
+    agents_config = "config/agents.yaml"
+    tasks_config = "config/tasks/d_research_tasks.yaml"
 
     @agent
     def web_research_analyst(self) -> Agent:

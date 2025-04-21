@@ -8,8 +8,8 @@ from news_flow.llm_configs import o4_mini_with_gpt4_1_fallback
 @CrewBase
 class ScrapeCrew:
     """Scrape Crew"""
-    agents_config = "config/a_scrape_agents.yaml"
-    tasks_config = "config/a_scrape_tasks.yaml"
+    agents_config = "config/agents.yaml"
+    tasks_config = "config/tasks/a_scrape_tasks.yaml"
 
     @agent
     def news_scraper(self) -> Agent:

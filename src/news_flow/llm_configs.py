@@ -87,7 +87,7 @@ def gpt4_1_mini_with_gemini_flash_fallback():
         ],
     )
 
-def o4_high_reasoning():
+def o4_mini_high_reasoning():
     """
     LLM Configuration:
     - Model: openai/o4-mini

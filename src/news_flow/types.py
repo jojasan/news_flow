@@ -5,6 +5,7 @@ class NewsWithSources(BaseModel):
     news_title: str = Field(..., description="The full name of the news.")
     summary: str = Field(..., description="The summary of the news.")
     source_url: str = Field(..., description="The url source for the news.")
+    topic: str = Field(..., description="The general topic of the news.")
     content: str = Field(..., description="The original unmodified content of the news from the source.")
 
 class NewsList(BaseModel):

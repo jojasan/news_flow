@@ -111,6 +111,8 @@ class NewsFlow(Flow[NewsState]):
             .kickoff(inputs={"urls": self.state.urls[0]}) # for now only one url
         )
 
+        self.state.topic = result.pydantic.topic
+
         logging.info("Saving state variables for scrape_news")
         self.state.news_list = result.pydantic
         self.state.flow_tokens['scrape_news'] = {"prompt_tokens": result.token_usage.prompt_tokens, 
@@ -130,7 +132,8 @@ class NewsFlow(Flow[NewsState]):
                     "summary": news.summary,
                     "source": news.source_url,
                     "perspective": self.state.perspective,
-                    "article_content": news.content
+                    "article_content": news.content,
+                    "topic": self.state.topic
                 }
             ]
             results = (
@@ -320,7 +323,7 @@ def kickoff():
 
     news_flow = NewsFlow()
     news_flow.kickoff(inputs={
-        'id': 'mac_yaml_test', # use an id if you want to start from the latest checkpoint
+        'id': 'mac_yaml_test4', # use an id if you want to start from the latest checkpoint
         'num_starting_pool_news': 2,
         'num_max_news': 1,
         'perspective': 'Positive, optimistic',

@@ -4,7 +4,7 @@ scrape_news_task:
     URLs: {urls}
     You will strictly scrape the news from the given URLs.
   expected_output: > 
-    The news title, summary, source url, and content of the news.
+    The news title, summary, source url, topic, and content of the news.
     You will return the content and summary of the news in a pydantic model of NewsList type.
     Even if you are given a single URL, you will return a list of news objects (typed as NewsWithSources).
     Format the output as a JSON object conforming to the following structure:
@@ -14,6 +14,7 @@ scrape_news_task:
           "news_title": "...",
           "summary": "...",
           "source_url": "...",
+          "topic": "...",
           "content": "..."
         }
       ]

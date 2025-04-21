@@ -12,13 +12,13 @@ from news_flow.llm_configs import (
 @CrewBase
 class CounterArgumentsCrew:
     """CounterArguments Crew"""
-    agents_config = "config/e_counterargs_agents.yaml"
-    tasks_config = "config/e_counterargs_tasks.yaml"
+    agents_config = "config/agents.yaml"
+    tasks_config = "config/tasks/e_counterargs_tasks.yaml"
 
     @agent
     def web_research_analyst(self) -> Agent:
         return Agent(
-            config=self.agents_config["web_research_analyst"],
+            config=self.agents_config["web_counter_analyst"],
             llm=gemini_flash_with_gpt4_1_mini_fallback(),
             tools=[serper_search, firecrawl],
             max_rpm=4,
@@ -28,7 +28,7 @@ class CounterArgumentsCrew:
     @agent
     def web_research_analyst_2(self) -> Agent:
         return Agent(
-            config=self.agents_config["web_research_analyst_2"],
+            config=self.agents_config["web_counter_analyst_2"],
             llm=gpt4_1_mini_with_gemini_flash_fallback(),
             tools=[brave_search, tavily_scrape],
             max_rpm=4,
@@ -38,7 +38,7 @@ class CounterArgumentsCrew:
     @agent
     def research_lead(self) -> Agent:
         return Agent(
-            config=self.agents_config["research_lead"],
+            config=self.agents_config["counter_lead"],
             llm=o4_mini_with_gemini_flash_fallback(),
             tools=[serper_search, firecrawl],
             max_iter=5,
