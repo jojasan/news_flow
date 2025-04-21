@@ -10,7 +10,7 @@ from crewai.flow import Flow, listen, start, persist, router, or_
 # Application-Specific Imports (News Flow Modules)
 from news_flow.crews import *
 from news_flow.types import (
-    NewsList, NewsResearchPlan, SupportingEvidence, CounterArgumentSources
+    NewsList, NewsResearchPlan, SupportingEvidence, CounterArgumentSources, CritiqueList
 )
 
 # Local Module Imports (Helper Functions)
@@ -48,6 +48,7 @@ class NewsState(BaseModel):
     tone: str = ''
     news_list: Optional[NewsList] = None
     plan: List[NewsResearchPlan] = []
+    critiques: List[CritiqueList] = []
     news_evidence: List[SupportingEvidence] = []
     counter_arguments: List[CounterArgumentSources] = []
     articles: List[str] = []
@@ -117,7 +118,34 @@ class NewsFlow(Flow[NewsState]):
         save_flow_step_output(result.pydantic, 'news_list.json')
         self.state.current_step = "scrape_news"
 
+
     @listen(or_(scrape_news, discover_news))
+    def critique_news(self):
+        logging.info("Starting critique...")
+        for news in self.state.news_list.news_list:
+            logging.info("--> Kicking off critique crews for article: %s", news.news_title)
+            critique_dicts = [
+                {
+                    "news_title": news.news_title,
+                    "summary": news.summary,
+                    "source": news.source_url,
+                    "perspective": self.state.perspective,
+                    "article_content": news.content
+                }
+            ]
+            results = (
+                CritiqueCrew().crew()
+                .kickoff_for_each(inputs=critique_dicts)
+            )  
+
+            logging.info("Saving state variables for critique_news")
+            for result in results:
+                self.state.critiques.append(result.pydantic)
+                save_flow_step_output(result.pydantic, filename=f'critique.json', subfolder=result.pydantic.news_title) 
+            self.state.current_step = "critique_news"
+
+
+    @listen(critique_news)
     def plan_research(self):
 
         # preparing the news list for the next crew
@@ -292,7 +320,7 @@ def kickoff():
 
     news_flow = NewsFlow()
     news_flow.kickoff(inputs={
-        'id': 'mac_new_llms2', # use an id if you want to start from the latest checkpoint
+        'id': 'mac_scrape_critique_test2', # use an id if you want to start from the latest checkpoint
         'num_starting_pool_news': 2,
         'num_max_news': 1,
         'perspective': 'Positive, optimistic',
@@ -300,9 +328,10 @@ def kickoff():
         'current_date': '2025-04-05',
         # 'topic': 'Depression in straight men between 30-50 years old',
         # 'topic': 'Articificial Intelligence business case ROI in Banks',
-        'topic': 'Climate Change in Colombia',
+        # 'topic': 'Climate Change in Colombia',
         # 'topic': 'Economic outlook of Peru',
-        # 'urls': ['https://edition.cnn.com/2025/04/05/business/trump-reciprocal-tariffs-real-numbers/index.html']
+        'urls': ['https://www.foxbusiness.com/media/gold-soars-dollar-sinks-forbes-warns-us-headed-towards-1970s-style-inflation-nightmare']
+        #'urls': ['https://edition.cnn.com/2025/04/05/business/trump-reciprocal-tariffs-real-numbers/index.html']
         #'start_from_method': 'counter_args', # use this parameter to start from a specific method (starts after this one)
     })
 
