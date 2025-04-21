@@ -80,7 +80,8 @@ def consolidate_news_json(
     evidence_list: List[Any],
     news_research_plans: List[Any],
     counter_arguments_list: List[Any],
-    news_list: Any
+    news_list: Any,
+    critiques_list: List[Any]
 ) -> dict:
     # Use a dictionary keyed by normalized title.
     news_dict = {}
@@ -98,7 +99,8 @@ def consolidate_news_json(
                 "content": news.content,
                 "supporting_evidence": [],
                 "datapoints": [],
-                "counter_argument_sources": []
+                "counter_argument_sources": [],
+                "critiques": []
             }
     
     def ensure_entry(original_title: str) -> str:
@@ -114,7 +116,8 @@ def consolidate_news_json(
                 "content": None,
                 "supporting_evidence": [],
                 "datapoints": [],
-                "counter_argument_sources": []
+                "counter_argument_sources": [],
+                "critiques": []
             }
         return key
 
@@ -129,6 +132,10 @@ def consolidate_news_json(
     for cas in counter_arguments_list:
         key = ensure_entry(cas.news_title)
         news_dict[key]["counter_argument_sources"].append(cas.dict())
+    
+    for critique in critiques_list:
+        key = ensure_entry(critique.news_title)
+        news_dict[key]["critiques"].append(critique.dict())
     
     consolidated_list = list(news_dict.values())
     return {"news_list": consolidated_list}

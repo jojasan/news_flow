@@ -3,15 +3,20 @@ write_article_task:
     Write a new alternative article based on an original article "{title}" found at source URL "{url}". 
     Here's the content of the original article: ```{original_content}```. 
     
-    The new article content should include the following:
+    The new article content must align to the following new perspective: {perspective}. 
+    Therefore, it must be in line with the following critiques about the original article: {critiques}.
+
+    The new article content should also include the following:
     - key evidence points: {evidence}, 
     - key datapoints: {datapoints}, 
     - address these counterarguments: {counterarguments}. 
     Ensure the article is well-structured, coherent, and engaging.
-    You must write this new article aligned to this perspective: {perspective}, and using this tone: {tone}.
+    You must write this new article using this tone: {tone}.
     Make sure to include the original article title and URL at the beginning of the article, and all the references and sources used.
+
+    You may conduct additional research to find more information to support the new perspective if needed.
   expected_output: >
-    A new article that addresses the key evidence points, key datapoints, and counterarguments provided. 
+    A new article with a new perspective ({perspective}) that addresses the key evidence points, key datapoints, and counterarguments provided. 
     The article should be well-structured, coherent, and engaging. It must reference the original article, and include all the 
     references and sources used. Return the article as markdown text.
   agent: expert_writer

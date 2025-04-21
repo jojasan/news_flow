@@ -2,6 +2,7 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai.llm import LLM
 from news_flow.llm_configs import o4_mini_high_reasoning
+from news_flow.tools import tavily_search, tavily_scrape
 
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
@@ -19,7 +20,9 @@ class WriterCrew:
         return Agent(
             config=self.agents_config["expert_writer"],
             llm=o4_mini_high_reasoning(),
-            verbose=True
+            verbose=True,
+            max_iter=10,
+            tools=[tavily_search, tavily_scrape],
         )
     
     @task

@@ -111,7 +111,7 @@ class NewsFlow(Flow[NewsState]):
             .kickoff(inputs={"urls": self.state.urls[0]}) # for now only one url
         )
 
-        self.state.topic = result.pydantic.topic
+        self.state.topic = result.pydantic.news_list[0].topic
 
         logging.info("Saving state variables for scrape_news")
         self.state.news_list = result.pydantic
@@ -265,7 +265,8 @@ class NewsFlow(Flow[NewsState]):
             self.state.news_evidence,
             self.state.plan,
             self.state.counter_arguments,
-            self.state.news_list
+            self.state.news_list,
+            self.state.critiques
         )
         save_flow_step_output(cleanup_consolidated_json(news_json), filename='final_research_output.json')
 
@@ -275,6 +276,7 @@ class NewsFlow(Flow[NewsState]):
             evidence_str = json.dumps(news_item["supporting_evidence"])
             datapoints_str = json.dumps(news_item["datapoints"])
             counterargs_str = json.dumps(news_item["counter_argument_sources"])
+            critiques_str = json.dumps(news_item["critiques"])
             
             writer_dics = [
                 {
@@ -284,6 +286,7 @@ class NewsFlow(Flow[NewsState]):
                     "evidence": evidence_str,
                     "datapoints": datapoints_str,
                     "counterarguments": counterargs_str,
+                    "critiques": critiques_str,
                     "perspective": self.state.perspective,
                     "tone": self.state.tone,
                 }
@@ -323,7 +326,7 @@ def kickoff():
 
     news_flow = NewsFlow()
     news_flow.kickoff(inputs={
-        'id': 'mac_yaml_test4', # use an id if you want to start from the latest checkpoint
+        'id': 'mac_master_test3', # use an id if you want to start from the latest checkpoint
         'num_starting_pool_news': 2,
         'num_max_news': 1,
         'perspective': 'Positive, optimistic',
@@ -332,7 +335,9 @@ def kickoff():
         # 'topic': 'Depression in straight men between 30-50 years old',
         # 'topic': 'Articificial Intelligence business case ROI in Banks',
         # 'topic': 'Climate Change in Colombia',
-        'topic': 'Economic outlook of Peru',
+        # 'topic': 'Economic outlook of Peru',
+        #'urls': ['https://ipwatchdog.com/2025/04/21/ai-ip-hollywood-finding-balance-verge-new-creative-class/id=188346/']
+        'urls': ['https://harvardlawreview.org/print/vol-138/artificial-intelligence-and-the-creative-double-bind/']
         # 'urls': ['https://www.foxbusiness.com/media/gold-soars-dollar-sinks-forbes-warns-us-headed-towards-1970s-style-inflation-nightmare']
         #'urls': ['https://edition.cnn.com/2025/04/05/business/trump-reciprocal-tariffs-real-numbers/index.html']
         #'start_from_method': 'counter_args', # use this parameter to start from a specific method (starts after this one)
