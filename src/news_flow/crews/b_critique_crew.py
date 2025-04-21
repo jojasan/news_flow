@@ -8,8 +8,8 @@ from news_flow.llm_configs import o4_mini_with_gpt4_1_fallback
 @CrewBase
 class CritiqueCrew:
     """Critique Crew"""
-    agents_config = "config/agents.yaml"
-    tasks_config = "config/tasks.yaml"
+    agents_config = "config/b_critique_agents.yaml"
+    tasks_config = "config/b_critique_tasks.yaml"
 
     @agent
     def editorial_analyst(self) -> Agent:

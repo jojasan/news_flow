@@ -11,8 +11,8 @@ from news_flow.llm_configs import (
 @CrewBase
 class DiscoverCrew:
     """Discover Crew"""
-    agents_config = "config/agents.yaml"
-    tasks_config = "config/tasks.yaml"
+    agents_config = "config/a_discover_agents.yaml"
+    tasks_config = "config/a_discover_tasks.yaml"
 
     @agent
     def topic_expert(self) -> Agent:

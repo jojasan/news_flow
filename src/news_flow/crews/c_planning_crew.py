@@ -8,8 +8,8 @@ from news_flow.llm_configs import o4_mini_with_gpt4_1_fallback
 @CrewBase
 class PlanningCrew:
     """Planning Crew"""
-    agents_config = "config/agents.yaml"
-    tasks_config = "config/tasks.yaml"
+    agents_config = "config/c_planning_agents.yaml"
+    tasks_config = "config/c_planning_tasks.yaml"
 
     @agent
     def editorial_analyst(self) -> Agent:

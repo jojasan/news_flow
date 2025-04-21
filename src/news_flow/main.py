@@ -320,7 +320,7 @@ def kickoff():
 
     news_flow = NewsFlow()
     news_flow.kickoff(inputs={
-        'id': 'mac_scrape_critique_test2', # use an id if you want to start from the latest checkpoint
+        'id': 'mac_yaml_test', # use an id if you want to start from the latest checkpoint
         'num_starting_pool_news': 2,
         'num_max_news': 1,
         'perspective': 'Positive, optimistic',
@@ -329,8 +329,8 @@ def kickoff():
         # 'topic': 'Depression in straight men between 30-50 years old',
         # 'topic': 'Articificial Intelligence business case ROI in Banks',
         # 'topic': 'Climate Change in Colombia',
-        # 'topic': 'Economic outlook of Peru',
-        'urls': ['https://www.foxbusiness.com/media/gold-soars-dollar-sinks-forbes-warns-us-headed-towards-1970s-style-inflation-nightmare']
+        'topic': 'Economic outlook of Peru',
+        # 'urls': ['https://www.foxbusiness.com/media/gold-soars-dollar-sinks-forbes-warns-us-headed-towards-1970s-style-inflation-nightmare']
         #'urls': ['https://edition.cnn.com/2025/04/05/business/trump-reciprocal-tariffs-real-numbers/index.html']
         #'start_from_method': 'counter_args', # use this parameter to start from a specific method (starts after this one)
     })

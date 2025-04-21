@@ -11,8 +11,8 @@ from news_flow.llm_configs import o4_high_reasoning
 @CrewBase
 class WriterCrew:
     """Writer Crew"""
-    agents_config = "config/agents.yaml"
-    tasks_config = "config/tasks.yaml"
+    agents_config = "config/f_writer_agents.yaml"
+    tasks_config = "config/f_writer_tasks.yaml"
 
     @agent
     def expert_writer(self) -> Agent:
