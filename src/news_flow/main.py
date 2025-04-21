@@ -292,7 +292,7 @@ def kickoff():
 
     news_flow = NewsFlow()
     news_flow.kickoff(inputs={
-        'id': 'mac_run1', # use an id if you want to start from the latest checkpoint
+        'id': 'mac_new_llms2', # use an id if you want to start from the latest checkpoint
         'num_starting_pool_news': 2,
         'num_max_news': 1,
         'perspective': 'Positive, optimistic',

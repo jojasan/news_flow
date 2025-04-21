@@ -4,9 +4,9 @@ from news_flow.types import SupportingEvidence
 from crewai.llm import LLM
 from news_flow.tools import serper_search, brave_search, firecrawl, tavily_scrape
 from news_flow.llm_configs import (
-    gemini_flash_with_gpt4o_mini_fallback,
-    gpt4o_mini_with_gemini_flash_fallback,
-    o3_mini_with_gemini_flash_fallback
+    gemini_flash_with_gpt4_1_mini_fallback,
+    gpt4_1_mini_with_gemini_flash_fallback,
+    o4_mini_with_gemini_flash_fallback
 )
 
 # If you want to run a snippet of code before or after the crew starts,
@@ -23,7 +23,7 @@ class ResearchCrew:
     def web_research_analyst(self) -> Agent:
         return Agent(
             config=self.agents_config["web_research_analyst"],
-            llm=gemini_flash_with_gpt4o_mini_fallback(),
+            llm=gemini_flash_with_gpt4_1_mini_fallback(),
             tools=[serper_search, firecrawl],
             max_rpm=6, # to not overwhelm the firecrawl API
             verbose=True
@@ -33,7 +33,7 @@ class ResearchCrew:
     def web_research_analyst_2(self) -> Agent:
         return Agent(
             config=self.agents_config["web_research_analyst_2"],
-            llm=gpt4o_mini_with_gemini_flash_fallback(),
+            llm=gpt4_1_mini_with_gemini_flash_fallback(),
             tools=[brave_search, tavily_scrape],
             max_rpm=6, # to not overwhelm the tavily API
             verbose=True
@@ -43,7 +43,7 @@ class ResearchCrew:
     def research_lead(self) -> Agent:
         return Agent(
             config=self.agents_config["research_lead"],
-            llm=o3_mini_with_gemini_flash_fallback(),
+            llm=o4_mini_with_gemini_flash_fallback(),
             # allow_delegation=True,
             tools=[serper_search, firecrawl],
             max_iter=5,

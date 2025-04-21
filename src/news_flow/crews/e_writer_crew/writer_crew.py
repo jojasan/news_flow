@@ -1,7 +1,7 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai.llm import LLM
-from news_flow.llm_configs import o3_mini_high_reasoning
+from news_flow.llm_configs import o4_high_reasoning
 
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
@@ -18,7 +18,7 @@ class WriterCrew:
     def expert_writer(self) -> Agent:
         return Agent(
             config=self.agents_config["expert_writer"],
-            llm=o3_mini_high_reasoning(),
+            llm=o4_high_reasoning(),
             verbose=True
         )
     

@@ -1,44 +1,44 @@
 from crewai.llm import LLM
 
-def o3_mini_with_gemini_flash_fallback():
+def o4_mini_with_gemini_flash_fallback():
     """
     LLM Configuration:
-    - Model: openai/o3-mini
+    - Model: openai/o4-mini
     - Retries: 3
     - Fallbacks:
-        1. openrouter/google/gemini-2.0-flash-001 (via OpenRouter)
+        1. openrouter/google/gemini-2.5-flash-preview (via OpenRouter)
         2. openai/gpt-4o
     """
     return LLM(
-        model="openai/o3-mini", 
+        model="openai/o4-mini", 
         num_retries=3,
         fallbacks=[
             {
-                "model": "openrouter/google/gemini-2.0-flash-001",
+                "model": "openrouter/google/gemini-2.5-flash-preview",
                 "base_url": "https://openrouter.ai/api/v1",
             },
             {
-                "model": "openai/gpt-4o"
+                "model": "openai/gpt-4.1"
             },
         ],
     )
 
-def gemini_flash_with_gpt4o_mini_fallback():
+def gemini_flash_with_gpt4_1_mini_fallback():
     """
     LLM Configuration:
-    - Model: openrouter/google/gemini-2.0-flash-001 (via OpenRouter)
+    - Model: openrouter/google/gemini-2.5-flash-preview (via OpenRouter)
     - Retries: 3
     - Fallbacks:
-        1. openai/gpt-4o-mini
+        1. openai/gpt-4.1-mini
         2. groq/llama-3.3-70b-versatile
     """
     return LLM(
-        model="openrouter/google/gemini-2.0-flash-001", 
+        model="openrouter/google/gemini-2.5-flash-preview", 
         base_url="https://openrouter.ai/api/v1",
         num_retries=3,
         fallbacks=[
             {
-                "model": "openai/gpt-4o-mini",
+                "model": "openai/gpt-4.1-mini",
             },
             {
                 "model": "groq/llama-3.3-70b-versatile",
@@ -46,39 +46,39 @@ def gemini_flash_with_gpt4o_mini_fallback():
         ],
     )
 
-def o3_mini_with_gpt4o_fallback():
+def o4_mini_with_gpt4_1_fallback():
     """
     LLM Configuration:
-    - Model: openai/o3-mini
+    - Model: openai/o4-mini
     - Retries: 3
     - Fallbacks:
-        1. openai/gpt-4o
+        1. openai/gpt-4.1
     """
     return LLM(
-        model="openai/o3-mini",
+        model="openai/o4-mini",
         num_retries=3,
         fallbacks=[
             {
-                "model": "openai/gpt-4o"
+                "model": "openai/gpt-4.1"
             },
         ],
     )
 
-def gpt4o_mini_with_gemini_flash_fallback():
+def gpt4_1_mini_with_gemini_flash_fallback():
     """
     LLM Configuration:
-    - Model: openai/gpt-4o-mini
+    - Model: openai/gpt-4.1-mini
     - Retries: 3
     - Fallbacks:
-        1. openrouter/google/gemini-2.0-flash-001 (via OpenRouter)
+        1. openrouter/google/gemini-2.5-flash-preview (via OpenRouter)
         2. groq/llama-3.3-70b-versatile
     """
     return LLM(
-        model="openai/gpt-4o-mini", 
+        model="openai/gpt-4.1-mini", 
         num_retries=3,
         fallbacks=[
             {
-                "model": "openrouter/google/gemini-2.0-flash-001",
+                "model": "openrouter/google/gemini-2.5-flash-preview",
                 "base_url": "https://openrouter.ai/api/v1",
             },
             {
@@ -87,37 +87,13 @@ def gpt4o_mini_with_gemini_flash_fallback():
         ],
     )
 
-def gpt4o_mini_with_gemini_flash_fallback():
+def o4_high_reasoning():
     """
     LLM Configuration:
-    - Model: openai/gpt-4o-mini
-    - Retries: 3
-    - Fallbacks:
-        1. openrouter/google/gemini-2.0-flash-001 (via OpenRouter)
-        2. openrouter/meta-llama/llama-3.3-70b-instruct (via OpenRouter)
-    """
-    return LLM(
-        model="openai/gpt-4o-mini", 
-        num_retries=3,
-        fallbacks=[
-            {
-                "model": "openrouter/google/gemini-2.0-flash-001",
-                "base_url": "https://openrouter.ai/api/v1",
-            },
-            {
-                "model": "openrouter/meta-llama/llama-3.3-70b-instruct",
-                "base_url": "https://openrouter.ai/api/v1",
-            },
-        ],
-    )
-
-def o3_mini_high_reasoning():
-    """
-    LLM Configuration:
-    - Model: openai/o3-mini
+    - Model: openai/o4-mini
     - Reasoning Effort: high
     """
     return LLM(
-        model='openai/o3-mini',
+        model='openai/o4-mini',
         reasoning_effort="high",
     ) 
