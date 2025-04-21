@@ -1,0 +1,19 @@
+critique_task:
+  description: >
+    From a given article, make a critique of the article based on the following criteria: \n
+    - (most important) Why isn't the article {perspective}? \n
+    - Also consider the following questions: \n
+      - Is the article factually correct? \n
+      - Is the article balanced? \n
+      - Is the article objective? \n
+      - Is the article biased? \n
+      - Is the article opinionated? \n
+      - Is the article well-researched? \n
+    Article title: {news_title} \n  
+    Article link: {source} \n
+    Article summary: {summary} \n
+    Article content: {article_content}
+  expected_output: >
+    A list of critiques of the news, each with a brief rationale of why it is a critique of the news.
+    Return a CritiqueList pydantic model. Include the news_title in the CritiqueList pydantic model.
+  agent: editorial_analyst

@@ -37,6 +37,7 @@ def save_flow_step_output(flow_step_output: Any, filename: str, subfolder: str =
     base_output_dir = os.path.join(os.path.dirname(__file__), 'outputs')
     if subfolder:
         subfolder = re.sub(r'[<>:"/\\|?*]', '_', subfolder)
+        subfolder = subfolder.rstrip(string.punctuation)  # Remove trailing punctuation
         output_dir = os.path.join(base_output_dir, subfolder)
     else:
         output_dir = base_output_dir

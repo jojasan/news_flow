@@ -10,6 +10,14 @@ class NewsWithSources(BaseModel):
 class NewsList(BaseModel):
     news_list: List[NewsWithSources] = Field(..., description="A list of news objects (typed as NewsWithSources)")
 
+class Critique(BaseModel):
+    critique: str = Field(..., description="The critique of the news.")
+    rationale: str = Field(..., description="The rationale for why this critique is valid.")
+
+class CritiqueList(BaseModel):
+    news_title: str = Field(..., description="The title of the news.")
+    critiques: List[Critique] = Field(..., description="A list of critiques of the news.")
+
 class KeyIdea(BaseModel):
     key_idea: str = Field(..., description="The key idea extracted from the news.")
     rationale: str = Field(..., description="The rationale for why this is a key idea that supports the main argument.")

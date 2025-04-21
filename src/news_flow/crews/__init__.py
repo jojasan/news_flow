@@ -4,7 +4,7 @@ from .b_planning_crew.planning_crew import PlanningCrew
 from .c_research_crew.research_crew import ResearchCrew
 from .d_counterargs_crew.counterargs_crew import CounterArgumentsCrew
 from .e_writer_crew.writer_crew import WriterCrew
-
+from .b0_critique_crew.critique_crew import CritiqueCrew
 __all__ = [
     "DiscoverCrew",
     "ScrapeCrew",
@@ -12,4 +12,5 @@ __all__ = [
     "ResearchCrew",
     "CounterArgumentsCrew",
     "WriterCrew",
+    "CritiqueCrew",
 ] 
